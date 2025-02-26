@@ -33,29 +33,29 @@ const Clothing = () => {
     const navigate = useNavigate();
     const imageWidth = 300;
     const enlargedWidth = 500;
+    const currentImageWidth = 350;
     const gap = 20;
     
     const pieces = [
-        { src: '/graffiti/1.JPG', title: 'Piece One', year: '2023' },
-        { src: '/graffiti/2.jpg', title: 'Piece Two', year: '2023' },
-        { src: '/graffiti/3.jpg', title: 'Piece Three', year: '2023' },
-        { src: '/graffiti/4.jpg', title: 'Piece Four', year: '2023' },
-        { src: '/graffiti/5.jpg', title: 'Piece Five', year: '2023' },
-        { src: '/graffiti/6.jpg', title: 'Piece Six', year: '2023' },
-        { src: '/graffiti/7.jpg', title: 'Piece Seven', year: '2023' }
+        { src: '/clothing/clothing1.jpg', title: 'THE SKY IS FALLING', year: '2022' },
+        { src: '/clothing/clothing2.jpg', title: 'YA NO LLORES', year: '2022' },
+        { src: '/clothing/clothing3.PNG', title: 'Nightmare Hoodie', year: '2021' },
+        { src: '/clothing/clothing4.JPG', title: 'Unstoppable Chaos (Brown)', year: '2022' },
+        { src: '/clothing/clothing5.JPG', title: 'Unstoppable Chaos (Black)', year: '2022' }
     ];
 
     const [enlargedId, setEnlargedId] = useState(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(2);
 
     const getInitialPosition = (index) => {
         const staggerX = 250;
-        const centerX = (window.innerWidth - (imageWidth + (staggerX * 6))) / 2;
+        const centerX = (window.innerWidth - (imageWidth + (staggerX * 4))) / 2 + 450;
         const baseY = (window.innerHeight / 4);
         
         const arcHeight = -120;
-        const x = centerX + (index * staggerX);
-        const y = baseY + (Math.sin(index / (pieces.length - 1) * Math.PI) * arcHeight);
+        const adjustedIndex = index - 2;
+        const x = centerX + (adjustedIndex * staggerX);
+        const y = baseY + (Math.sin((index / (pieces.length - 1)) * Math.PI) * arcHeight);
         
         return { x, y };
     };
@@ -64,10 +64,10 @@ const Clothing = () => {
         pieces.map((piece, i) => ({
             id: i,
             ...piece,
-            width: imageWidth,
-            height: imageWidth,
+            width: i === 2 ? currentImageWidth : imageWidth,
+            height: i === 2 ? currentImageWidth : imageWidth,
             ...getInitialPosition(i),
-            zIndex: 7 - i
+            zIndex: i === 2 ? 8 : 7 - Math.abs(i - 2)
         }))
     );
 
@@ -95,10 +95,18 @@ const Clothing = () => {
                 ? (prev + 1) % images.length 
                 : (prev - 1 + images.length) % images.length;
             
-            setImages(prevImages => prevImages.map((img, i) => ({
-                ...img,
-                ...getInitialPosition((i - newIndex + images.length) % images.length)
-            })));
+            setImages(prevImages => prevImages.map((img, i) => {
+                const newPosition = (i - newIndex + 2 + images.length) % images.length;
+                const isCenterImage = newPosition === 2;
+                
+                return {
+                    ...img,
+                    ...getInitialPosition(newPosition),
+                    width: isCenterImage ? currentImageWidth : imageWidth,
+                    height: isCenterImage ? currentImageWidth : imageWidth,
+                    zIndex: isCenterImage ? 8 : 7 - Math.abs(newPosition - 2)
+                };
+            }));
             
             return newIndex;
         });
@@ -111,15 +119,15 @@ const Clothing = () => {
                 <div className="header-nav">
                     <button 
                         className="header-button"
-                        onClick={() => navigate('/portfolio')}
-                    >
-                        Portfolio
-                    </button>
-                    <button 
-                        className="header-button"
                         onClick={() => navigate('/store')}
                     >
                         Store
+                    </button>
+                    <button 
+                        className="header-button"
+                        onClick={() => navigate('/portfolio')}
+                    >
+                        Portfolio
                     </button>
                 </div>
                 <img 
@@ -155,6 +163,7 @@ const Clothing = () => {
                                 height: `${enlargedId === image.id ? enlargedWidth : image.height}px`,
                                 zIndex: enlargedId === image.id ? 2000 : image.zIndex,
                                 transform: `rotate(${enlargedId === image.id ? 0 : image.id * 2 - 7}deg)`,
+                                transition: 'all 0.3s ease-in-out'
                             }}
                             onMouseEnter={() => bringToFront(image.id)}
                             onClick={() => handleImageClick(image.id)}
