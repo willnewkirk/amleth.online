@@ -132,32 +132,102 @@ li {
 }
 
 .portfolio-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: black;
     min-height: 100vh;
-    background-color: var(--background-color);
-}
-
-.menu-cluster {
+    color: white;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+    align-items: center;
 }
 
-.menu-button {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--accent-color);
-    color: var(--text-color);
+.logo-container {
+    margin-top: 2vh;
     cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
-.menu-button:hover {
-    transform: scale(1.05);
-    background-color: var(--accent-hover-color);
+.logo-container:hover {
+    transform: scale(1.1);
+    filter: brightness(0.8);
+}
+
+.home-logo {
+    width: 150px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(1.75);
+}
+
+.top-menu-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.menu-item {
+    font-family: 'Special Elite', monospace;
+    font-size: 1rem;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+}
+
+.menu-item:hover {
+    transform: scale(1.1);
+    filter: brightness(0.8);
+}
+
+.menu-item.active {
+    transform: scale(1.1);
+    filter: brightness(0.8);
+}
+
+@media (max-width: 768px) {
+    .menu-container {
+        transform: translateY(-50%) scale(1.5);
+    }
+
+    .top-menu-row {
+        gap: 0.75rem;
+    }
+
+    .menu-item {
+        font-size: 0.9rem;
+    }
+
+    .home-logo {
+        width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-container {
+        transform: translateY(-50%) scale(1.25);
+    }
+
+    .top-menu-row {
+        gap: 0.5rem;
+    }
+
+    .menu-item {
+        font-size: 0.8rem;
+    }
+
+    .home-logo {
+        width: 100px;
+    }
 } 

@@ -10,17 +10,55 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.25rem;
+  position: relative;
+}
+
+.logo-online-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  position: relative;
 }
 
 .image-container {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  margin-top: -5vh;
+  margin-bottom: -0.5rem;
+  display: flex;
+  justify-content: center;
+  transform-origin: center;
 }
 
-.image-container:hover,
-.image-container:active,
-.image-container.touched {
+.online-text {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0;
+  font-size: 2.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  transform: translateY(0.25vh);
+  position: relative;
+}
+
+.online-text .nav-button {
+  font-size: 2.5rem;
+  padding: 5px;
+  position: relative;
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-container.hovered {
+  transform: scale(1.1);
+  filter: brightness(0.8);
+}
+
+.online-text.hovered .nav-button {
   transform: scale(1.1);
   filter: brightness(0.8);
 }
@@ -32,7 +70,7 @@
   filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
 }
 
-.image-container:hover .logo {
+.logo-online-container:hover .logo {
   filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)) brightness(0.8);
 }
 
@@ -40,8 +78,8 @@
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-  margin-top: -1rem;
-  transform: translateX(-1rem);
+  margin-top: 0.25rem;
+  transform: translateX(-0.5rem);
 }
 
 .nav-button {
@@ -97,7 +135,8 @@
 }
 
 .store-button {
-  margin-left: -0.5rem;
+  margin-left: 0.5rem;
+  transform: translateX(4%);
 }
 
 @media (max-width: 768px) {

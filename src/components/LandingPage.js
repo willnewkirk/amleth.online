@@ -4,8 +4,10 @@ import '../styles/LandingPage.css';
 
 function LandingPage() {
   const navigate = useNavigate();
+  const [onlineText, setOnlineText] = useState('');
   const [portfolioText, setPortfolioText] = useState('');
   const [storeText, setStoreText] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
   
   useEffect(() => {
     const typeText = (text, setText, delay) => {
@@ -26,6 +28,7 @@ function LandingPage() {
     };
 
     const animateText = async () => {
+      await typeText('Online', setOnlineText, 500);
       await typeText('Portfolio', setPortfolioText, 500);
       await typeText('Store', setStoreText, 500);
     };
@@ -34,6 +37,7 @@ function LandingPage() {
 
     // Cleanup function
     return () => {
+      setOnlineText('');
       setPortfolioText('');
       setStoreText('');
     };
@@ -47,15 +51,28 @@ function LandingPage() {
     }, 300); // Remove class after animation completes
   };
 
+  const handleHover = (hovering) => {
+    setIsHovered(hovering);
+  };
+
   return (
     <div className="landing-container">
       <div className="content-wrapper">
         <div 
-          className="image-container"
+          className="logo-online-container"
+          onMouseEnter={() => handleHover(true)}
+          onMouseLeave={() => handleHover(false)}
           onClick={() => navigate('/')}
           onTouchStart={handleTouch}
         >
-          <img src="/am.png" alt="AM Logo" className="logo" />
+          <div className={`image-container ${isHovered ? 'hovered' : ''}`}>
+            <img src="/am.png" alt="AM Logo" className="logo" />
+          </div>
+          <div className={`online-text ${isHovered ? 'hovered' : ''}`}>
+            <span className="nav-button">
+              {onlineText || '\u00A0'}
+            </span>
+          </div>
         </div>
         <div className="button-container">
           <button 
