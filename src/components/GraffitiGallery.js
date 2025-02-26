@@ -34,14 +34,15 @@ const GraffitiGallery = () => {
         }
     };
     
+    // Updated image URLs with correct file extensions
     const imageUrls = [
-        '/graffiti/1.png',
-        '/graffiti/2.png',
-        '/graffiti/3.png',
-        '/graffiti/4.png',
-        '/graffiti/5.png',
-        '/graffiti/6.png',
-        '/graffiti/7.png'
+        '/graffiti/1.jpg',
+        '/graffiti/2.jpg',
+        '/graffiti/3.jpg',
+        '/graffiti/4.jpg',
+        '/graffiti/5.jpg',
+        '/graffiti/6.jpg',
+        '/graffiti/7.jpg'
     ];
     
     const [images, setImages] = useState(
