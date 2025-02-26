@@ -6,6 +6,10 @@
       "dest": "/static/$1"
     },
     {
+      "src": "/graffiti/(.*)",
+      "dest": "/graffiti/$1"
+    },
+    {
       "src": "/am.png",
       "dest": "/am.png"
     },
