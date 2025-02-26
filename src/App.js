@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import Portfolio from './components/Portfolio';
 import Store from './components/Store';
+import GraffitiGallery from './components/GraffitiGallery';
+import Resume from './components/Resume';
 import './styles/App.css';
 
 function App() {
@@ -12,6 +14,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/store" element={<Store />} />
+        <Route path="/graffiti" element={<GraffitiGallery />} />
+        <Route path="/resume" element={<Resume />} />
       </Routes>
     </Router>
   );

@@ -1,2 +1,8 @@
 .vercel
 node_modules
+.DS_Store
+# Add any image file types you might use
+*.jpg
+*.jpeg
+*.png
+*.gif
