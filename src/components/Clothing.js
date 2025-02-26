@@ -180,10 +180,10 @@ const Clothing = () => {
                     ))}
                 </div>
                 <div className="content-wrapper piece-info">
-                    <div className="typewriter piece-title">
+                    <div className="piece-title">
                         <span className="nav-button">{images[currentIndex].title}</span>
                     </div>
-                    <div className="typewriter piece-year">
+                    <div className="piece-year">
                         <span className="nav-button">{images[currentIndex].year}</span>
                     </div>
                 </div>

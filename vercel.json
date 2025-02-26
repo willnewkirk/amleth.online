@@ -10,6 +10,26 @@
       "dest": "/graffiti/$1"
     },
     {
+      "src": "/clothing/clothing1.jpg",
+      "dest": "/clothing/clothing1.jpg"
+    },
+    {
+      "src": "/clothing/clothing2.jpg",
+      "dest": "/clothing/clothing2.jpg"
+    },
+    {
+      "src": "/clothing/clothing3.PNG",
+      "dest": "/clothing/clothing3.PNG"
+    },
+    {
+      "src": "/clothing/clothing4.JPG",
+      "dest": "/clothing/clothing4.JPG"
+    },
+    {
+      "src": "/clothing/clothing5.JPG",
+      "dest": "/clothing/clothing5.JPG"
+    },
+    {
       "src": "/am.png",
       "dest": "/am.png"
     },
