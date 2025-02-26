@@ -36,7 +36,7 @@ const GraffitiGallery = () => {
     
     // Updated image URLs with correct file extensions
     const imageUrls = [
-        '/graffiti/1.jpg',
+        '/graffiti/1.JPG',
         '/graffiti/2.jpg',
         '/graffiti/3.jpg',
         '/graffiti/4.jpg',
