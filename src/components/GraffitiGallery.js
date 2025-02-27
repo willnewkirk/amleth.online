@@ -7,30 +7,52 @@ import '../styles/GraffitiGallery.css';
 
 const GraffitiGallery = () => {
     const navigate = useNavigate();
-    const imageWidth = 300;
-    const gap = 20;
     
-    // Calculate positions for two rows: 4 on top, 3 on bottom
+    // Adjust image width based on screen size
+    const getImageWidth = () => {
+        const screenWidth = window.innerWidth;
+        if (screenWidth <= 480) return 140; // phones
+        if (screenWidth <= 768) return 160; // tablets
+        return 300; // desktop
+    };
+    
+    const imageWidth = getImageWidth();
+    const gap = 10; // Reduced gap for mobile
+    
+    // Reorganize positions for 2 columns (3+2 layout on mobile)
     const getInitialPosition = (index) => {
-        const isTopRow = index < 4;
+        const isMobile = window.innerWidth <= 768;
         
-        if (isTopRow) {
-            // Top row with 4 images
-            const topRowWidth = (imageWidth * 4) + (gap * 3);
-            const startX = Math.max(20, (window.innerWidth - topRowWidth) / 2 - 50);
+        if (isMobile) {
+            const column = index % 2;
+            const row = Math.floor(index / 2);
+            const columnWidth = imageWidth + gap;
+            const startX = (window.innerWidth - (columnWidth * 2)) / 2;
+            
+            // Adjust vertical position to be more visible
             return {
-                x: startX + (index * (imageWidth + gap)),
-                y: 80
+                x: startX + (column * columnWidth),
+                y: 100 + (row * (imageWidth + gap))
             };
         } else {
-            // Bottom row with 3 images
-            const bottomRowWidth = (imageWidth * 3) + (gap * 2);
-            const startX = Math.max(20, (window.innerWidth - bottomRowWidth) / 2 - 50);
-            const bottomIndex = index - 4;
-            return {
-                x: startX + (bottomIndex * (imageWidth + gap)),
-                y: 80 + imageWidth + gap
-            };
+            // Original desktop layout
+            const isTopRow = index < 4;
+            if (isTopRow) {
+                const topRowWidth = (imageWidth * 4) + (gap * 3);
+                const startX = Math.max(20, (window.innerWidth - topRowWidth) / 2 - 50);
+                return {
+                    x: startX + (index * (imageWidth + gap)),
+                    y: 80
+                };
+            } else {
+                const bottomRowWidth = (imageWidth * 3) + (gap * 2);
+                const startX = Math.max(20, (window.innerWidth - bottomRowWidth) / 2 - 50);
+                const bottomIndex = index - 4;
+                return {
+                    x: startX + (bottomIndex * (imageWidth + gap)),
+                    y: 80 + imageWidth + gap
+                };
+            }
         }
     };
     
@@ -55,6 +77,24 @@ const GraffitiGallery = () => {
             zIndex: 1
         }))
     );
+
+    // Add resize handler
+    React.useEffect(() => {
+        const handleResize = () => {
+            const newWidth = getImageWidth();
+            setImages(prevImages => 
+                prevImages.map((img, index) => ({
+                    ...img,
+                    width: newWidth,
+                    height: newWidth,
+                    ...getInitialPosition(index)
+                }))
+            );
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const bringToFront = (id) => {
         setImages(prevImages => prevImages.map(img => ({
@@ -134,7 +174,9 @@ const GraffitiGallery = () => {
             <div style={{ 
                 position: 'relative', 
                 height: 'calc(100vh - 80px)',
-                padding: '20px'
+                padding: '10px',
+                overflowY: 'auto',
+                overflowX: 'hidden' // Prevent horizontal scrolling
             }}>
                 {images.map((image) => (
                     <Draggable
@@ -142,6 +184,16 @@ const GraffitiGallery = () => {
                         defaultPosition={{x: image.x, y: image.y}}
                         bounds="parent"
                         onStart={() => bringToFront(image.id)}
+                        // Add position update handling
+                        onStop={(e, data) => {
+                            setImages(prevImages => 
+                                prevImages.map(img => 
+                                    img.id === image.id 
+                                        ? { ...img, x: data.x, y: data.y }
+                                        : img
+                                )
+                            );
+                        }}
                     >
                         <div 
                             className="draggable-image-container"

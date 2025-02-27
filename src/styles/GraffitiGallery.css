@@ -90,4 +90,47 @@
 
 .draggable-image-container:hover .resize-arrow {
     filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+@media (max-width: 768px) {
+    .draggable-image-container {
+        touch-action: none;
+    }
+
+    .draggable-image-container:hover .image-wrapper {
+        transform: scale(1.03);
+    }
+
+    .image-wrapper {
+        transition: transform 0.2s ease;
+    }
+
+    .resize-handle {
+        width: 20px;
+        height: 20px;
+    }
+
+    .resize-arrow {
+        right: 4px;
+        bottom: 4px;
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid rgba(255, 255, 255, 0.9);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .gallery-image {
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    .gallery-container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .draggable-image-container:hover .image-wrapper {
+        transform: scale(1.02);
+    }
 } 
