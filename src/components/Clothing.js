@@ -32,7 +32,7 @@ const ArrowRight = () => (
 const Clothing = () => {
     const navigate = useNavigate();
     const imageWidth = 300;
-    const enlargedWidth = 500;
+    const enlargedWidth = window.innerWidth <= 768 ? window.innerWidth * 0.9 : 500; // Responsive enlarged width
     const currentImageWidth = 350;
     const gap = 20;
     
@@ -156,14 +156,14 @@ const Clothing = () => {
                             key={image.id}
                             className={`draggable-image-container ${enlargedId === image.id ? 'enlarged' : ''}`}
                             style={{
-                                position: 'absolute',
-                                left: `${enlargedId === image.id ? (window.innerWidth - enlargedWidth) / 2 : image.x}px`,
-                                top: `${enlargedId === image.id ? (window.innerHeight - enlargedWidth) / 2 : image.y}px`,
+                                position: enlargedId === image.id ? 'fixed' : 'absolute',
                                 width: `${enlargedId === image.id ? enlargedWidth : image.width}px`,
                                 height: `${enlargedId === image.id ? enlargedWidth : image.height}px`,
-                                zIndex: enlargedId === image.id ? 2000 : image.zIndex,
-                                transform: `rotate(${enlargedId === image.id ? 0 : image.id * 2 - 7}deg)`,
-                                transition: 'all 0.3s ease-in-out'
+                                ...(enlargedId !== image.id && {
+                                    left: `${image.x}px`,
+                                    top: `${image.y}px`,
+                                    transform: `rotate(${image.id * 2 - 7}deg)`
+                                })
                             }}
                             onMouseEnter={() => bringToFront(image.id)}
                             onClick={() => handleImageClick(image.id)}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Draggable from 'react-draggable';
 import '../styles/Header.css';
@@ -147,6 +147,25 @@ const GraffitiGallery = () => {
         window.addEventListener('mouseup', mouseUpHandler);
     };
 
+    const [focusedImage, setFocusedImage] = useState(null);
+    const lastTapRef = useRef(0);
+
+    const handleTap = (imageId, e) => {
+        e.preventDefault(); // Prevent default touch behavior
+        
+        const now = Date.now();
+        const DOUBLE_TAP_DELAY = 300;
+
+        if (lastTapRef.current && (now - lastTapRef.current) < DOUBLE_TAP_DELAY) {
+            // Double tap detected
+            setFocusedImage(focusedImage === imageId ? null : imageId);
+            lastTapRef.current = 0;
+        } else {
+            // First tap
+            lastTapRef.current = now;
+        }
+    };
+
     return (
         <div style={{ backgroundColor: 'black', minHeight: '100vh', color: 'white', overflow: 'hidden' }}>
             <div className="header-container">
@@ -184,27 +203,20 @@ const GraffitiGallery = () => {
                         defaultPosition={{x: image.x, y: image.y}}
                         bounds="parent"
                         onStart={() => bringToFront(image.id)}
-                        // Add position update handling
-                        onStop={(e, data) => {
-                            setImages(prevImages => 
-                                prevImages.map(img => 
-                                    img.id === image.id 
-                                        ? { ...img, x: data.x, y: data.y }
-                                        : img
-                                )
-                            );
-                        }}
+                        disabled={focusedImage !== null}
                     >
                         <div 
-                            className="draggable-image-container"
+                            className={`draggable-image-container ${focusedImage === image.id ? 'focused' : ''}`}
                             style={{
                                 position: 'absolute',
                                 width: `${image.width}px`,
                                 height: `${image.height}px`,
-                                zIndex: image.zIndex
+                                zIndex: focusedImage === image.id ? 2000 : image.zIndex,
+                                transition: focusedImage !== null ? 'all 0.3s ease' : 'none'
                             }}
                             onClick={() => bringToFront(image.id)}
                             onMouseEnter={() => handleMouseEnter(image.id)}
+                            onTouchStart={(e) => handleTap(image.id, e)}
                         >
                             <div className="image-wrapper">
                                 <img 
@@ -217,17 +229,25 @@ const GraffitiGallery = () => {
                                         objectFit: 'cover'
                                     }}
                                 />
-                                <div 
-                                    className="resize-handle"
-                                    onMouseDown={handleResize.bind(null, image.id)}
-                                >
-                                    <div className="resize-arrow" />
-                                </div>
+                                {!focusedImage && (
+                                    <div 
+                                        className="resize-handle"
+                                        onMouseDown={handleResize.bind(null, image.id)}
+                                    >
+                                        <div className="resize-arrow" />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </Draggable>
                 ))}
             </div>
+            {focusedImage !== null && (
+                <div 
+                    className="overlay"
+                    onClick={() => setFocusedImage(null)}
+                />
+            )}
         </div>
     );
 };

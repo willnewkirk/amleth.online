@@ -210,4 +210,46 @@
         width: 100%;
         opacity: 1;
     }
+}
+
+/* Add these new mobile styles */
+@media (max-width: 768px) {
+    .draggable-image-container.enlarged {
+        position: fixed !important;
+        top: 20% !important; /* Position from top of viewport */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 9999 !important;
+        transition: none !important;
+        width: 90vw !important;
+        height: auto !important;
+    }
+
+    .draggable-image-container.enlarged .image-wrapper {
+        transform: none !important;
+    }
+
+    .draggable-image-container.enlarged .gallery-image {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 70vh !important;
+    }
+
+    .carousel-section,
+    .carousel-container,
+    .clothing-container {
+        overflow: visible !important;
+    }
+}
+
+/* Add overlay when image is enlarged */
+.draggable-image-container.enlarged::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: -1;
 } 

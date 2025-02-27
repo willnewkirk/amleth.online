@@ -92,6 +92,35 @@
     filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
 }
 
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1500;
+}
+
+.draggable-image-container.focused {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90vw !important;
+    height: auto !important;
+    max-height: 90vh !important;
+    z-index: 2000 !important;
+}
+
+.focused .image-wrapper {
+    transform: none !important;
+}
+
+.focused .gallery-image {
+    object-fit: contain !important;
+}
+
 @media (max-width: 768px) {
     .draggable-image-container {
         touch-action: none;
@@ -126,6 +155,10 @@
 
     .gallery-container {
         padding: 10px;
+    }
+
+    .draggable-image-container.focused {
+        width: 95vw !important;
     }
 }
 
