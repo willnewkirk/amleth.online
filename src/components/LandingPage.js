@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import StarryBackground from './StarryBackground';
 import '../styles/LandingPage.css';
 
-function LandingPage() {
+const LandingPage = () => {
   const navigate = useNavigate();
   const [onlineText, setOnlineText] = useState('');
   const [portfolioText, setPortfolioText] = useState('');
   const [storeText, setStoreText] = useState('');
   const [isHovered, setIsHovered] = useState(false);
+  const [showGallery, setShowGallery] = useState('');
+  const [galleryText, setGalleryText] = useState('');
+  const fullText = 'Gallery';
   
   useEffect(() => {
     const typeText = (text, setText, delay) => {
@@ -36,11 +39,17 @@ function LandingPage() {
 
     animateText();
 
+    // Show Gallery text after delay
+    const timer = setTimeout(() => {
+      setShowGallery(true);
+    }, 2000);
+
     // Cleanup function
     return () => {
       setOnlineText('');
       setPortfolioText('');
       setStoreText('');
+      clearTimeout(timer);
     };
   }, []);
 
@@ -53,6 +62,24 @@ function LandingPage() {
     }, 2000);
   }, []);
 
+  useEffect(() => {
+    let currentIndex = 0;
+    const startTyping = setTimeout(() => {
+      const typingInterval = setInterval(() => {
+        if (currentIndex < fullText.length) {
+          setGalleryText(fullText.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 150);
+      
+      return () => clearInterval(typingInterval);
+    }, 2000);
+
+    return () => clearTimeout(startTyping);
+  }, []);
+
   const handleTouch = (event) => {
     const element = event.currentTarget;
     element.classList.add('touched');
@@ -63,6 +90,10 @@ function LandingPage() {
 
   const handleHover = (hovering) => {
     setIsHovered(hovering);
+  };
+
+  const handleButtonClick = (path) => {
+    navigate(path);
   };
 
   return (
@@ -87,11 +118,11 @@ function LandingPage() {
         </div>
         <div className="button-container">
           <button 
-            onClick={() => navigate('/portfolio')} 
-            onTouchStart={handleTouch}
-            className="nav-button"
+            className="nav-button delay-gallery" 
+            value="Gallery" 
+            onClick={() => handleButtonClick('/portfolio')}
           >
-            {portfolioText || '\u00A0'}
+            {galleryText}
           </button>
           <button 
             onClick={() => navigate('/store')} 
@@ -104,6 +135,6 @@ function LandingPage() {
       </div>
     </div>
   );
-}
+};
 
 export default LandingPage; 

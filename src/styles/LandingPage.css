@@ -146,6 +146,13 @@ button[value="store"]:hover,
   animation-timing-function: steps(5);
 }
 
+.delay-gallery {
+    animation-delay: 2s;
+    width: 0 !important;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 @keyframes typing {
   from { 
     width: 0;
@@ -193,6 +200,10 @@ button[value="store"]:hover,
   .button-container button:last-child:hover {
     transform: translateX(-0.5vw) translateY(-2px) !important;
   }
+
+  .nav-button[value="Gallery"] {
+    width: 4.5em; /* Adjust if needed for mobile */
+  }
 }
 
 @media (max-width: 480px) {
@@ -232,4 +243,22 @@ button[value="store"]:hover,
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.nav-button[value="Gallery"] {
+    width: 5.5em;
+    animation: typing 1s steps(7, end);
+    animation-delay: 2s;
+    animation-fill-mode: forwards;
+}
+
+@media (max-width: 768px) {
+    .nav-button[value="Gallery"] {
+        width: 4.5em; /* Adjust if needed for mobile */
+    }
+}
+
+/* Migrate any portfolio hover states */
+.nav-button[value="Gallery"]:hover {
+    transform: translateY(-2px);
 } 
