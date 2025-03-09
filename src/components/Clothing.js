@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
@@ -47,6 +47,9 @@ const Clothing = () => {
 
     const [enlargedId, setEnlargedId] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(2);
+    const [touchStart, setTouchStart] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [isEnlarged, setIsEnlarged] = useState(false);
 
     const getInitialPosition = (index) => {
         const staggerX = 250;
@@ -81,13 +84,9 @@ const Clothing = () => {
         }
     };
 
-    const handleImageClick = (id) => {
-        if (enlargedId === id) {
-            setEnlargedId(null);
-        } else {
-            setEnlargedId(id);
-            bringToFront(id);
-        }
+    const handleImageClick = () => {
+        console.log('Image clicked'); // Debug log
+        setIsEnlarged(!isEnlarged);
     };
 
     const handleArrowClick = (direction) => {
@@ -114,8 +113,37 @@ const Clothing = () => {
         setEnlargedId(null);
     };
 
+    const handleTouchStart = (e) => {
+        setTouchStart(e.touches[0].clientX);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!touchStart) return;
+        
+        const currentTouch = e.touches[0].clientX;
+        const diff = touchStart - currentTouch;
+        
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                handleArrowClick('next');
+            } else {
+                handleArrowClick('prev');
+            }
+            setTouchStart(null);
+        }
+    };
+
+    const handleTouchEnd = () => {
+        setTouchStart(null);
+    };
+
     return (
-        <div className="clothing-container">
+        <div 
+            className="clothing-container"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+        >
             <StarryBackground />
             <div className="header-container">
                 <div className="header-nav">
@@ -141,18 +169,16 @@ const Clothing = () => {
             </div>
             <div className="carousel-container">
                 <div className="carousel-section">
-                    <div 
-                        className="carousel-arrow left"
-                        onClick={() => handleArrowClick('prev')}
-                    >
-                        <ArrowLeft />
-                    </div>
-                    <div 
-                        className="carousel-arrow right"
-                        onClick={() => handleArrowClick('next')}
-                    >
-                        <ArrowRight />
-                    </div>
+                    <button className="arrow-button left desktop-only" onClick={() => handleArrowClick('prev')}>
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+                    <button className="arrow-button right desktop-only" onClick={() => handleArrowClick('next')}>
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                            <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
                     {images.map((image) => (
                         <div 
                             key={image.id}
@@ -168,13 +194,13 @@ const Clothing = () => {
                                 })
                             }}
                             onMouseEnter={() => bringToFront(image.id)}
-                            onClick={() => handleImageClick(image.id)}
+                            onClick={() => handleImageClick(image)}
                         >
                             <div className="image-wrapper">
                                 <img 
                                     src={image.src}
                                     alt={`Clothing piece ${image.id + 1}`}
-                                    className="gallery-image"
+                                    className={`gallery-image ${selectedImage === image.src ? 'enlarged-image' : ''}`}
                                     loading="lazy"
                                 />
                             </div>
