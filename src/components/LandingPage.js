@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import StarryBackground from './StarryBackground';
 import '../styles/LandingPage.css';
 
 function LandingPage() {
@@ -43,6 +44,15 @@ function LandingPage() {
     };
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      const buttons = document.querySelector('.button-container');
+      if (buttons) {
+        buttons.classList.add('highlight-buttons');
+      }
+    }, 2000);
+  }, []);
+
   const handleTouch = (event) => {
     const element = event.currentTarget;
     element.classList.add('touched');
@@ -57,6 +67,7 @@ function LandingPage() {
 
   return (
     <div className="landing-container">
+      <StarryBackground />
       <div className="content-wrapper">
         <div 
           className="logo-online-container"

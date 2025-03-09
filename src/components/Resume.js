@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
 import '../styles/Portfolio.css';
 
@@ -8,6 +9,7 @@ function Resume() {
 
   return (
     <div style={{ backgroundColor: 'black', minHeight: '100vh', color: 'white' }}>
+      <StarryBackground />
       <div className="header-container">
         <div className="header-nav">
           <button 

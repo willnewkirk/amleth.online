@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
 import '../styles/Portfolio.css';
 import '../styles/Clothing.css';
@@ -115,6 +116,7 @@ const Clothing = () => {
 
     return (
         <div className="clothing-container">
+            <StarryBackground />
             <div className="header-container">
                 <div className="header-nav">
                     <button 

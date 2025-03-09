@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import StarryBackground from './StarryBackground';
 import '../styles/Portfolio.css';
 
 const Portfolio = () => {
@@ -7,6 +8,7 @@ const Portfolio = () => {
 
     return (
         <div className="portfolio-container">
+            <StarryBackground />
             <div className="menu-container">
                 <div className="top-menu-row">
                     <button 

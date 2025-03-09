@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
 import '../styles/Transitions.css';
 import '../styles/Store.css';
@@ -9,6 +10,7 @@ function Store() {
 
   return (
     <div className="page-transition" style={{ backgroundColor: 'black', minHeight: '100vh', color: 'white' }}>
+      <StarryBackground />
       <div className="header-container">
         <div className="header-nav">
           <button 
