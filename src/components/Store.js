@@ -11,7 +11,7 @@ function Store() {
   return (
     <div style={{ position: 'relative', minHeight: '100vh' }}>
       <StarryBackground />
-      <div style={{ 
+      <div className="loading-container" style={{ 
         position: 'absolute', 
         top: '50%', 
         left: '50%', 
@@ -21,7 +21,8 @@ function Store() {
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
-        fontFamily: 'monospace'
+        fontFamily: 'monospace',
+        whiteSpace: 'nowrap'
       }}>
         <p style={{
           fontSize: '2em',

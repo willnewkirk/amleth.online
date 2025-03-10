@@ -139,14 +139,13 @@ const Clothing = () => {
     };
 
     return (
-        <div 
-            className="clothing-container"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-        >
-            <StarryBackground />
-            <div className="header-container">
+        <div>
+            <div className="header-container" style={{
+                position: 'fixed',
+                top: 0,
+                width: '100%',
+                zIndex: 1000
+            }}>
                 <div className="header-nav">
                     <button 
                         className="header-button"
@@ -168,66 +167,85 @@ const Clothing = () => {
                     onClick={() => navigate('/')}
                 />
             </div>
-            <div className="carousel-container">
-                <div className="carousel-section">
-                    <button className="arrow-button left desktop-only" onClick={() => handleArrowClick('prev')}>
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </button>
-                    <button className="arrow-button right desktop-only" onClick={() => handleArrowClick('next')}>
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                            <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                    </button>
-                    {images.map((image) => (
-                        <div 
-                            key={image.id}
-                            className={`draggable-image-container ${enlargedId === image.id ? 'enlarged' : ''}`}
-                            style={{
-                                position: enlargedId === image.id ? 'fixed' : 'absolute',
-                                width: `${enlargedId === image.id ? enlargedWidth : image.width}px`,
-                                height: `${enlargedId === image.id ? enlargedWidth : image.height}px`,
-                                ...(enlargedId !== image.id && {
-                                    left: `${image.x}px`,
-                                    top: `${image.y}px`,
-                                    transform: `rotate(${image.id * 2 - 7}deg)`
-                                })
-                            }}
-                            onMouseEnter={() => bringToFront(image.id)}
-                            onClick={() => handleImageClick(image)}
-                        >
-                            <div className="image-wrapper">
-                                <img 
-                                    src={image.src}
-                                    alt={`Clothing piece ${image.id + 1}`}
-                                    className={`gallery-image ${selectedImage === image.src ? 'enlarged-image' : ''}`}
-                                    loading="lazy"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="content-wrapper piece-info">
-                    <div className="piece-title">
-                        <span className="nav-button">{images[currentIndex].title}</span>
-                    </div>
-                    <div className="piece-year">
-                        <span className="nav-button">{images[currentIndex].year}</span>
-                    </div>
-                </div>
-            </div>
             
-            {isModalOpen && (
-                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-                    <img 
-                        src={images[currentIndex].src} 
-                        alt="Clothing" 
-                        className="modal-image"
-                        onClick={(e) => e.stopPropagation()}
-                    />
+            <div 
+                className="clothing-container"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%',
+                    height: '100vh',
+                    overflow: 'hidden',
+                    paddingTop: '60px' // Add space for nav and logo
+                }}
+            >
+                <StarryBackground />
+                <div className="carousel-container">
+                    <div className="carousel-section">
+                        <button className="arrow-button left desktop-only" onClick={() => handleArrowClick('prev')}>
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
+                        <button className="arrow-button right desktop-only" onClick={() => handleArrowClick('next')}>
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                                <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
+                        {images.map((image) => (
+                            <div 
+                                key={image.id}
+                                className={`draggable-image-container ${enlargedId === image.id ? 'enlarged' : ''}`}
+                                style={{
+                                    position: enlargedId === image.id ? 'fixed' : 'absolute',
+                                    width: `${enlargedId === image.id ? enlargedWidth : image.width}px`,
+                                    height: `${enlargedId === image.id ? enlargedWidth : image.height}px`,
+                                    ...(enlargedId !== image.id && {
+                                        left: `${image.x}px`,
+                                        top: `${image.y}px`,
+                                        transform: `rotate(${image.id * 2 - 7}deg)`
+                                    })
+                                }}
+                                onMouseEnter={() => bringToFront(image.id)}
+                                onClick={() => handleImageClick(image)}
+                            >
+                                <div className="image-wrapper">
+                                    <img 
+                                        src={image.src}
+                                        alt={`Clothing piece ${image.id + 1}`}
+                                        className={`gallery-image ${selectedImage === image.src ? 'enlarged-image' : ''}`}
+                                        loading="lazy"
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="content-wrapper piece-info">
+                        <div className="piece-title">
+                            <span className="nav-button">{images[currentIndex].title}</span>
+                        </div>
+                        <div className="piece-year">
+                            <span className="nav-button">{images[currentIndex].year}</span>
+                        </div>
+                    </div>
                 </div>
-            )}
+                
+                {isModalOpen && (
+                    <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                        <img 
+                            src={images[currentIndex].src} 
+                            alt="Clothing" 
+                            className="modal-image"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

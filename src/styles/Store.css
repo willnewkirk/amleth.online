@@ -56,3 +56,13 @@
     0%, 100% { opacity: 0; }
     50% { opacity: 1; }
 }
+
+@media (max-width: 768px) {
+    .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        white-space: nowrap; /* Prevent line break */
+    }
+}
