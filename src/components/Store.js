@@ -9,44 +9,33 @@ function Store() {
   const navigate = useNavigate();
 
   return (
-    <div className="page-transition" style={{ backgroundColor: 'black', minHeight: '100vh', color: 'white' }}>
+    <div style={{ position: 'relative', minHeight: '100vh' }}>
       <StarryBackground />
-      <div className="header-container">
-        <div className="header-nav">
-          <button 
-            className="header-button"
-            onClick={() => navigate('/portfolio')}
-          >
-            Portfolio
-          </button>
-          <button className="header-button">Store</button>
-        </div>
-        <img 
-          src="/am.png" 
-          alt="AM Logo" 
-          className="header-logo"
-          onClick={() => navigate('/')}
-        />
-      </div>
       <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '80vh',
-        fontFamily: 'Special Elite, monospace'
+        position: 'absolute', 
+        top: '50%', 
+        left: '50%', 
+        transform: 'translate(-50%, -50%)', 
+        color: 'white',
+        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        fontFamily: 'monospace'
       }}>
-        <div style={{ 
-          fontSize: '2.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px'
+        <p style={{
+          fontSize: '2em',
+          margin: 0
         }}>
-          <span>Coming Soon</span>
-          <div style={{ display: 'inline-flex', marginLeft: '8px' }}>
-            <span className="dot-1">.</span>
-            <span className="dot-2">.</span>
-            <span className="dot-3">.</span>
-          </div>
+          Coming Soon
+        </p>
+        <div className="loading-dots" style={{
+          fontSize: '2em',
+          margin: 0
+        }}>
+          <span className="dot">.</span>
+          <span className="dot">.</span>
+          <span className="dot">.</span>
         </div>
       </div>
     </div>
