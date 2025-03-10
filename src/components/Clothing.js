@@ -50,6 +50,8 @@ const Clothing = () => {
     const [touchStart, setTouchStart] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [isEnlarged, setIsEnlarged] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const getInitialPosition = (index) => {
         const staggerX = 250;
@@ -85,8 +87,7 @@ const Clothing = () => {
     };
 
     const handleImageClick = () => {
-        console.log('Image clicked'); // Debug log
-        setIsEnlarged(!isEnlarged);
+        setIsModalOpen(true);
     };
 
     const handleArrowClick = (direction) => {
@@ -216,6 +217,17 @@ const Clothing = () => {
                     </div>
                 </div>
             </div>
+            
+            {isModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                    <img 
+                        src={images[currentIndex].src} 
+                        alt="Clothing" 
+                        className="modal-image"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 };
