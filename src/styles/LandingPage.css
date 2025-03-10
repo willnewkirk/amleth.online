@@ -111,8 +111,8 @@ button[value="Store"],
 button[value="store"],
 .nav-button:nth-child(2),
 .button-container button:last-child {
-    margin-left: -1vw !important;
-    transform: translateX(-1vw) !important;
+    margin-left: -0.5vw !important;
+    transform: translateX(-0.5vw) !important;
     position: relative !important;
 }
 
@@ -121,7 +121,7 @@ button[value="Store"]:hover,
 button[value="store"]:hover,
 .nav-button:nth-child(2):hover,
 .button-container button:last-child:hover {
-    transform: translateX(-1vw) translateY(-2px) !important;
+    transform: translateX(-0.5vw) translateY(-2px) !important;
 }
 
 .typewriter {
