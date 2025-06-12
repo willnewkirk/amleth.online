@@ -27,6 +27,12 @@
     cursor: move;
     position: relative;
     user-select: none;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .image-wrapper {
@@ -35,10 +41,11 @@
     height: 100%;
     transition: transform 0.3s ease;
     transform-origin: center;
+    will-change: transform;
 }
 
 .draggable-image-container:hover .image-wrapper {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .resize-handle {
@@ -82,6 +89,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
 }
 
 .draggable-image-container:hover .gallery-image {
@@ -127,30 +139,21 @@
     }
 
     .draggable-image-container:hover .image-wrapper {
-        transform: scale(1.03);
+        transform: none;
     }
 
     .image-wrapper {
-        transition: transform 0.2s ease;
+        transition: none;
     }
 
     .resize-handle {
-        width: 20px;
-        height: 20px;
-    }
-
-    .resize-arrow {
-        right: 4px;
-        bottom: 4px;
-        width: 10px;
-        height: 10px;
-        border-right: 2px solid rgba(255, 255, 255, 0.9);
-        border-bottom: 2px solid rgba(255, 255, 255, 0.9);
+        display: none;
     }
 
     .gallery-image {
         will-change: transform;
         backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
     }
 
     .gallery-container {
@@ -158,12 +161,23 @@
     }
 
     .draggable-image-container.focused {
-        width: 95vw !important;
+        width: 90vw !important;
+        max-height: 80vh !important;
+        margin: 0 auto !important;
+    }
+
+    .focused .gallery-image {
+        object-fit: contain !important;
+        max-height: 80vh !important;
     }
 }
 
 @media (max-width: 480px) {
-    .draggable-image-container:hover .image-wrapper {
-        transform: scale(1.02);
+    .draggable-image-container {
+        touch-action: none;
+    }
+
+    .draggable-image-container.focused {
+        width: 95vw !important;
     }
 } 

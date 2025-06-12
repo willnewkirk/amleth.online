@@ -190,8 +190,19 @@ li {
     border: none;
 }
 
+/* Add specific style for Graffiti button */
+.menu-container > .menu-item {
+    transform: translateX(-5%);
+}
+
 .menu-item:hover {
     transform: scale(1.1);
+    filter: brightness(0.8);
+}
+
+/* Update hover state for Graffiti button */
+.menu-container > .menu-item:hover {
+    transform: translateX(-5%) scale(1.1);
     filter: brightness(0.8);
 }
 

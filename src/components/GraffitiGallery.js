@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Draggable from 'react-draggable';
 import StarryBackground from './StarryBackground';
@@ -8,13 +8,22 @@ import '../styles/GraffitiGallery.css';
 
 const GraffitiGallery = () => {
     const navigate = useNavigate();
+    const containerRef = useRef(null);
+    
+    // Prevent scrolling on mount and cleanup
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
     
     // Adjust image width based on screen size
     const getImageWidth = () => {
         const screenWidth = window.innerWidth;
-        if (screenWidth <= 480) return 140; // phones
-        if (screenWidth <= 768) return 160; // tablets
-        return 300; // desktop
+        if (screenWidth <= 480) return 120; // phones
+        if (screenWidth <= 768) return 140; // tablets
+        return 250; // desktop
     };
     
     const imageWidth = getImageWidth();
@@ -23,31 +32,31 @@ const GraffitiGallery = () => {
     // Reorganize positions for 2 columns (3+2 layout on mobile)
     const getInitialPosition = (index) => {
         const isMobile = window.innerWidth <= 768;
+        const containerWidth = containerRef.current?.offsetWidth || window.innerWidth;
         
         if (isMobile) {
             const column = index % 2;
             const row = Math.floor(index / 2);
             const columnWidth = imageWidth + gap;
-            const startX = (window.innerWidth - (columnWidth * 2)) / 2;
+            const startX = (containerWidth - (columnWidth * 2)) / 2;
             
-            // Adjust vertical position to be more visible
             return {
                 x: startX + (column * columnWidth),
-                y: 100 + (row * (imageWidth + gap))
+                y: 80 + (row * (imageWidth + gap))
             };
         } else {
-            // Original desktop layout
+            // Desktop layout
             const isTopRow = index < 4;
             if (isTopRow) {
                 const topRowWidth = (imageWidth * 4) + (gap * 3);
-                const startX = Math.max(20, (window.innerWidth - topRowWidth) / 2 - 50);
+                const startX = (containerWidth - topRowWidth) / 2;
                 return {
                     x: startX + (index * (imageWidth + gap)),
                     y: 80
                 };
             } else {
                 const bottomRowWidth = (imageWidth * 3) + (gap * 2);
-                const startX = Math.max(20, (window.innerWidth - bottomRowWidth) / 2 - 50);
+                const startX = (containerWidth - bottomRowWidth) / 2;
                 const bottomIndex = index - 4;
                 return {
                     x: startX + (bottomIndex * (imageWidth + gap)),
@@ -168,7 +177,13 @@ const GraffitiGallery = () => {
     };
 
     return (
-        <div style={{ backgroundColor: 'black', minHeight: '100vh', color: 'white', overflow: 'hidden' }}>
+        <div style={{ 
+            backgroundColor: 'black', 
+            minHeight: '100vh', 
+            color: 'white', 
+            overflow: 'hidden',
+            position: 'relative'
+        }}>
             <StarryBackground />
             <div className="header-container">
                 <div className="header-nav">
@@ -198,13 +213,15 @@ const GraffitiGallery = () => {
                     onClick={() => navigate('/')}
                 />
             </div>
-            <div style={{ 
-                position: 'relative', 
-                height: 'calc(100vh - 80px)',
-                padding: '10px',
-                overflowY: 'auto',
-                overflowX: 'hidden' // Prevent horizontal scrolling
-            }}>
+            <div 
+                ref={containerRef}
+                style={{ 
+                    position: 'relative', 
+                    height: 'calc(100vh - 80px)',
+                    width: '100%',
+                    overflow: 'hidden'
+                }}
+            >
                 {images.map((image) => (
                     <Draggable
                         key={image.id}
@@ -218,7 +235,7 @@ const GraffitiGallery = () => {
                             style={{
                                 position: 'absolute',
                                 width: `${image.width}px`,
-                                height: `${image.height}px`,
+                                height: `${image.width}px`, // Keep aspect ratio square
                                 zIndex: focusedImage === image.id ? 2000 : image.zIndex,
                                 transition: focusedImage !== null ? 'all 0.3s ease' : 'none'
                             }}
