@@ -141,23 +141,30 @@ const Clothing = () => {
     return (
         <div>
             <div className="header-container" style={{
-                position: 'fixed',
+                position: 'absolute',
                 top: 0,
-                width: '100%',
-                zIndex: 1000
+                left: 0,
+                right: 0,
+                zIndex: 2
             }}>
                 <div className="header-nav">
                     <button 
                         className="header-button"
-                        onClick={() => navigate('/store')}
+                        onClick={() => navigate('/')}
                     >
-                        Store
+                        Home
                     </button>
                     <button 
                         className="header-button"
                         onClick={() => navigate('/portfolio')}
                     >
                         Portfolio
+                    </button>
+                    <button 
+                        className="header-button"
+                        onClick={() => navigate('/store')}
+                    >
+                        Store
                     </button>
                 </div>
                 <img 

@@ -174,6 +174,12 @@ const GraffitiGallery = () => {
                 <div className="header-nav">
                     <button 
                         className="header-button"
+                        onClick={() => navigate('/')}
+                    >
+                        Home
+                    </button>
+                    <button 
+                        className="header-button"
                         onClick={() => navigate('/portfolio')}
                     >
                         Portfolio

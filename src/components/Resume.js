@@ -8,11 +8,29 @@ function Resume() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh' }}>
+    <div style={{ 
+      position: 'relative', 
+      minHeight: '100vh',
+      width: '100%',
+      overflow: 'auto',
+      WebkitOverflowScrolling: 'touch' // For smooth scrolling on iOS
+    }}>
       <StarryBackground />
-      <div style={{ position: 'relative', zIndex: 1, color: 'white' }}>
+      <div style={{ 
+        position: 'relative', 
+        zIndex: 1, 
+        color: 'white',
+        width: '100%',
+        overflow: 'visible'
+      }}>
         <div className="header-container">
           <div className="header-nav">
+            <button 
+              className="header-button"
+              onClick={() => navigate('/')}
+            >
+              Home
+            </button>
             <button 
               className="header-button"
               onClick={() => navigate('/portfolio')}

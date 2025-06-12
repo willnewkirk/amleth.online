@@ -4,6 +4,9 @@
   padding: 2rem;
   color: rgba(255, 255, 255, 0.9);
   font-family: 'Special Elite', monospace;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .resume-section {
@@ -111,6 +114,7 @@ li {
 @media (max-width: 768px) {
   .resume-container {
     padding: 1rem;
+    margin-top: 60px; /* Add space for the header */
   }
 
   .contact-section h1 {
