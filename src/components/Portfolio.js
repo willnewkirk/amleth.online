@@ -56,12 +56,12 @@ const Portfolio = () => {
                         >
                             Home
                         </button>
-                        <button 
-                            className="header-button"
-                            onClick={() => navigate('/portfolio')}
-                        >
-                            Portfolio
-                        </button>
+            <button 
+              className="header-button"
+              onClick={() => navigate('/portfolio')}
+            >
+              Studio
+            </button>
                         <button 
                             className="header-button"
                             onClick={() => navigate('/store')}

@@ -4,6 +4,7 @@ import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
 import '../styles/Transitions.css';
 import '../styles/Store.css';
+import '../styles/LandingPage.css';
 
 function Store() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ function Store() {
               className="header-button"
               onClick={() => navigate('/portfolio')}
             >
-              Portfolio
+              Studio
             </button>
             <button 
               className="header-button"
@@ -49,31 +50,48 @@ function Store() {
         top: '50%', 
         left: '50%', 
         transform: 'translate(-50%, -50%)', 
-        color: 'white',
+        color: 'rgba(255, 255, 255, 0.9)',
         textAlign: 'center',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        gap: '10px',
-        fontFamily: "'Special Elite', monospace",
-        whiteSpace: 'nowrap',
+        gap: '1.5rem',
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontWeight: 900,
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
         zIndex: 1
       }}>
         <p style={{
-          fontSize: '2em',
+          fontSize: '1.5em',
           margin: 0,
-          fontFamily: "'Special Elite', monospace"
+          whiteSpace: 'nowrap'
         }}>
-          Restocking
+          RESTOCKING JUNE 2026
         </p>
-        <div className="loading-dots" style={{
-          fontSize: '2em',
-          margin: 0,
-          fontFamily: "'Special Elite', monospace"
-        }}>
-          <span className="dot">.</span>
-          <span className="dot">.</span>
-          <span className="dot">.</span>
-        </div>
+        <a 
+          href="https://instagram.com/aml3th"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="landing-button"
+          style={{ textDecoration: 'none', padding: '12px 14px' }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
       </div>
     </div>
   );

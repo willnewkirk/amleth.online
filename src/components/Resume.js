@@ -35,7 +35,7 @@ function Resume() {
               className="header-button"
               onClick={() => navigate('/portfolio')}
             >
-              Portfolio
+              Studio
             </button>
             <button 
               className="header-button"
