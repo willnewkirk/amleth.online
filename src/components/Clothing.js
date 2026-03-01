@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
@@ -6,36 +6,11 @@ import '../styles/Portfolio.css';
 import '../styles/Clothing.css';
 import '../styles/LandingPage.css';
 
-const ArrowLeft = () => (
-    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path 
-            d="M45 10L15 30L45 50" 
-            stroke="white" 
-            strokeWidth="5" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-        />
-    </svg>
-);
-
-const ArrowRight = () => (
-    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path 
-            d="M15 10L45 30L15 50" 
-            stroke="white" 
-            strokeWidth="5" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-        />
-    </svg>
-);
-
 const Clothing = () => {
     const navigate = useNavigate();
     const imageWidth = 300;
-    const enlargedWidth = window.innerWidth <= 768 ? window.innerWidth * 0.9 : 500; // Responsive enlarged width
+    const enlargedWidth = window.innerWidth <= 768 ? window.innerWidth * 0.9 : 500;
     const currentImageWidth = 350;
-    const gap = 20;
     
     const pieces = [
         { src: '/clothing/clothing1.jpg', title: 'THE SKY IS FALLING', year: '2022' },
@@ -48,9 +23,7 @@ const Clothing = () => {
     const [enlargedId, setEnlargedId] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(2);
     const [touchStart, setTouchStart] = useState(null);
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [isEnlarged, setIsEnlarged] = useState(false);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [selectedImage] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const getInitialPosition = (index) => {

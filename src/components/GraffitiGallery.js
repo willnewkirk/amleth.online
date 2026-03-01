@@ -104,6 +104,7 @@ const GraffitiGallery = () => {
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const bringToFront = (id) => {
@@ -128,14 +129,11 @@ const GraffitiGallery = () => {
         const startWidth = startRect.width;
         const startHeight = startRect.height;
         const startX = startEvent.clientX;
-        const startY = startEvent.clientY;
 
         const mouseMoveHandler = (moveEvent) => {
             const deltaX = moveEvent.clientX - startX;
-            const deltaY = moveEvent.clientY - startY;
             
             const newWidth = Math.max(100, startWidth + deltaX);
-            const newHeight = Math.max(100, startHeight + deltaY);
             
             const aspectRatio = startWidth / startHeight;
             const finalWidth = newWidth;
