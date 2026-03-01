@@ -6,12 +6,7 @@ import '../styles/LandingPage.css';
 const LandingPage = () => {
   const navigate = useNavigate();
   const [onlineText, setOnlineText] = useState('');
-  const [portfolioText, setPortfolioText] = useState('');
-  const [storeText, setStoreText] = useState('');
   const [isHovered, setIsHovered] = useState(false);
-  const [showGallery, setShowGallery] = useState('');
-  const [galleryText, setGalleryText] = useState('');
-  const fullText = 'Gallery';
   
   useEffect(() => {
     const typeText = (text, setText, delay) => {
@@ -33,51 +28,13 @@ const LandingPage = () => {
 
     const animateText = async () => {
       await typeText('Online', setOnlineText, 500);
-      await typeText('Portfolio', setPortfolioText, 500);
-      await typeText('Store', setStoreText, 500);
     };
 
     animateText();
 
-    // Show Gallery text after delay
-    const timer = setTimeout(() => {
-      setShowGallery(true);
-    }, 2000);
-
-    // Cleanup function
     return () => {
       setOnlineText('');
-      setPortfolioText('');
-      setStoreText('');
-      clearTimeout(timer);
     };
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => {
-      const buttons = document.querySelector('.button-container');
-      if (buttons) {
-        buttons.classList.add('highlight-buttons');
-      }
-    }, 2000);
-  }, []);
-
-  useEffect(() => {
-    let currentIndex = 0;
-    const startTyping = setTimeout(() => {
-      const typingInterval = setInterval(() => {
-        if (currentIndex < fullText.length) {
-          setGalleryText(fullText.slice(0, currentIndex + 1));
-          currentIndex++;
-        } else {
-          clearInterval(typingInterval);
-        }
-      }, 150);
-      
-      return () => clearInterval(typingInterval);
-    }, 2000);
-
-    return () => clearTimeout(startTyping);
   }, []);
 
   const handleTouch = (event) => {
@@ -85,15 +42,11 @@ const LandingPage = () => {
     element.classList.add('touched');
     setTimeout(() => {
       element.classList.remove('touched');
-    }, 300); // Remove class after animation completes
+    }, 300);
   };
 
   const handleHover = (hovering) => {
     setIsHovered(hovering);
-  };
-
-  const handleButtonClick = (path) => {
-    navigate(path);
   };
 
   return (
@@ -111,25 +64,25 @@ const LandingPage = () => {
             <img src="/am.png" alt="AM Logo" className="logo" />
           </div>
           <div className={`online-text ${isHovered ? 'hovered' : ''}`}>
-            <span className="nav-button">
+            <span className="nav-button online-label">
               {onlineText || '\u00A0'}
             </span>
           </div>
         </div>
         <div className="button-container">
           <button 
-            className="nav-button delay-gallery" 
-            value="Gallery" 
-            onClick={() => handleButtonClick('/portfolio')}
+            className="landing-button" 
+            onClick={() => navigate('/portfolio')}
+            onTouchStart={handleTouch}
           >
-            {galleryText}
+            Studio
           </button>
           <button 
+            className="landing-button"
             onClick={() => navigate('/store')} 
             onTouchStart={handleTouch}
-            className="nav-button store-button"
           >
-            {storeText || '\u00A0'}
+            Store
           </button>
         </div>
       </div>

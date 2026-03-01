@@ -76,10 +76,9 @@
 
 .button-container {
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
   justify-content: center;
-  margin-top: 0.25rem;
-  transform: translateX(-1.5rem);
+  margin-top: 1rem;
 }
 
 .nav-button {
@@ -96,6 +95,10 @@
   position: relative;
 }
 
+.online-label {
+  cursor: default;
+}
+
 .nav-button:hover {
   transform: translateY(-2px);
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
@@ -106,67 +109,75 @@
   transform: scale(1.1);
 }
 
-/* Try multiple selectors to ensure we target the right button */
-button[value="Store"],
-button[value="store"],
-.nav-button:nth-child(2),
-.button-container button:last-child {
-    margin-left: -0.5vw !important;
-    transform: translateX(-0.5vw) !important;
-    position: relative !important;
-}
-
-/* Hover states */
-button[value="Store"]:hover,
-button[value="store"]:hover,
-.nav-button:nth-child(2):hover,
-.button-container button:last-child:hover {
-    transform: translateX(-0.5vw) translateY(-2px) !important;
-}
-
-.typewriter {
-  display: inline-block;
+/* Landing page buttons - styled as actual buttons */
+.landing-button {
+  padding: 12px 32px;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 25px;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   overflow: hidden;
-  white-space: nowrap;
-  width: 0;
-  animation: typing 2s steps(9) forwards;
 }
 
-.delay-portfolio {
-  animation-delay: 0.5s;
-  width: 0;
-  animation-duration: 1.5s;
-  animation-timing-function: steps(9);
+/* Shine effect */
+.landing-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shine 6s ease-in-out infinite;
 }
 
-.delay-store {
-  animation-delay: 2.5s;
-  width: 0;
-  animation-duration: 1s;
-  animation-timing-function: steps(5);
+/* Offset the second button's shine */
+.landing-button:nth-child(2)::before {
+  animation-delay: 3s;
 }
 
-.delay-gallery {
-    animation-delay: 2s;
-    width: 0 !important;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-@keyframes typing {
-  from { 
-    width: 0;
-    opacity: 1;
+@keyframes shine {
+  0% {
+    left: -100%;
   }
-  to { 
-    width: 100%;
-    opacity: 1;
+  15% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
   }
 }
 
-.store-button {
-  margin-left: 0.5rem;
-  transform: translateX(4%);
+.landing-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.landing-button:active,
+.landing-button.touched {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 @media (max-width: 768px) {
@@ -180,29 +191,14 @@ button[value="store"]:hover,
     min-width: 90px;
   }
 
+  .landing-button {
+    padding: 10px 26px;
+    font-size: 0.95rem;
+    min-width: 105px;
+  }
+
   .button-container {
-    transform: translateX(-0.5rem);
-  }
-
-  /* Try multiple selectors to ensure we target the right button */
-  button[value="Store"],
-  button[value="store"],
-  .nav-button:nth-child(2),
-  .button-container button:last-child {
-    margin-left: -0.5vw !important;
-    transform: translateX(-0.5vw) !important;
-  }
-  
-  /* Hover states */
-  button[value="Store"]:hover,
-  button[value="store"]:hover,
-  .nav-button:nth-child(2):hover,
-  .button-container button:last-child:hover {
-    transform: translateX(-0.5vw) translateY(-2px) !important;
-  }
-
-  .nav-button[value="Gallery"] {
-    width: 4.5em; /* Adjust if needed for mobile */
+    gap: 1rem;
   }
 }
 
@@ -216,49 +212,18 @@ button[value="store"]:hover,
     min-width: 80px;
   }
 
-  .button-container {
-    transform: translateX(-0.5rem);
+  .landing-button {
+    padding: 9px 20px;
+    font-size: 0.85rem;
+    min-width: 90px;
   }
-}
 
-@keyframes subtlePulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.highlight-buttons {
-  animation: subtlePulse 2s infinite;
-}
-
-.hint-text {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  opacity: 0;
-  animation: fadeIn 1s ease forwards;
-  animation-delay: 2s;
+  .button-container {
+    gap: 0.75rem;
+  }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-.nav-button[value="Gallery"] {
-    width: 5.5em;
-    animation: typing 1s steps(7, end);
-    animation-delay: 2s;
-    animation-fill-mode: forwards;
-}
-
-@media (max-width: 768px) {
-    .nav-button[value="Gallery"] {
-        width: 4.5em; /* Adjust if needed for mobile */
-    }
-}
-
-/* Migrate any portfolio hover states */
-.nav-button[value="Gallery"]:hover {
-    transform: translateY(-2px);
 } 
