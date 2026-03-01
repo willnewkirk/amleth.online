@@ -1,11 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
 import '../styles/Portfolio.css';
+import '../styles/LandingPage.css';
 
 const Portfolio = () => {
     const navigate = useNavigate();
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
+    const previewImages = [
+        '/graffiti/1.JPG',
+        '/clothing/clothing1.jpg',
+        '/graffiti/2.jpg',
+        '/clothing/clothing2.jpg',
+        '/graffiti/3.jpg',
+        '/clothing/clothing3.PNG',
+        '/graffiti/4.jpg',
+        '/clothing/clothing4.JPG',
+        '/graffiti/5.jpg',
+        '/clothing/clothing5.JPG',
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentImageIndex((prev) => (prev + 1) % previewImages.length);
+                setIsTransitioning(false);
+            }, 200);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [previewImages.length]);
+
+    const handleTouch = (event) => {
+        const element = event.currentTarget;
+        element.classList.add('touched');
+        setTimeout(() => {
+            element.classList.remove('touched');
+        }, 300);
+    };
 
     return (
         <div className="portfolio-container">
@@ -42,28 +78,33 @@ const Portfolio = () => {
                 </div>
             </div>
             
-            {/* Original Menu Cluster */}
-            <div className="menu-container">
-                <div className="top-menu-row">
+            {/* Menu Cluster */}
+            <div className="studio-menu-container">
+                {/* Rotating Preview Image */}
+                <div className="preview-image-container">
+                    <img 
+                        src={previewImages[currentImageIndex]}
+                        alt="Preview"
+                        className={`preview-image ${isTransitioning ? 'fade-out' : 'fade-in'}`}
+                    />
+                </div>
+                
+                <div className="studio-menu-row">
                     <button 
-                        className="menu-item"
-                        onClick={() => navigate('/resume')}
+                        className="landing-button"
+                        onClick={() => navigate('/graffiti')}
+                        onTouchStart={handleTouch}
                     >
-                        Resume
+                        Graffiti
                     </button>
                     <button 
-                        className="menu-item"
+                        className="landing-button"
                         onClick={() => navigate('/clothing')}
+                        onTouchStart={handleTouch}
                     >
                         Clothing
                     </button>
                 </div>
-                <button 
-                    className="menu-item"
-                    onClick={() => navigate('/graffiti')}
-                >
-                    Graffiti
-                </button>
             </div>
         </div>
     );

@@ -36,28 +36,77 @@
   transform: none;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.5rem;
   z-index: 2;
-  width: 100px;
 }
 
 .header-button {
-  padding: 4px 12px;
-  font-size: 0.9rem;
-  background: transparent;
-  border: none;
-  color: white;
+  padding: 8px 16px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Special Elite', monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Shine effect for header buttons */
+.header-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
   width: 100%;
-  text-align: left;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: headerShine 8s ease-in-out infinite;
+}
+
+.header-button:nth-child(2)::before {
+  animation-delay: 2.5s;
+}
+
+.header-button:nth-child(3)::before {
+  animation-delay: 5s;
+}
+
+@keyframes headerShine {
+  0% {
+    left: -100%;
+  }
+  15% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .header-button:hover,
 .header-button:active,
 .header-button.touched {
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .store-grid {
@@ -122,13 +171,13 @@
   .header-nav {
     left: 0.5rem;
     top: 1rem;
-    gap: 0.12rem;
-    width: 90px;
+    gap: 0.4rem;
   }
 
   .header-button {
-    padding: 3px 10px;
-    font-size: 0.8rem;
+    padding: 6px 12px;
+    font-size: 0.55rem;
+    border-radius: 16px;
   }
 }
 
@@ -139,11 +188,15 @@
   }
 
   .header-nav {
-    width: 80px;
-    gap: 0.1rem;
+    left: 0.4rem;
+    top: 0.8rem;
+    gap: 0.3rem;
   }
 
   .header-button {
-    font-size: 0.75rem;
+    padding: 5px 10px;
+    font-size: 0.5rem;
+    letter-spacing: 0.5px;
+    border-radius: 14px;
   }
 } 
