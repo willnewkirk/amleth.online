@@ -15,12 +15,13 @@ const Portfolio = () => {
         '/clothing/clothing1.jpg',
         '/graffiti/2.jpg',
         '/clothing/clothing2.jpg',
-        '/graffiti/3.jpg',
-        '/clothing/clothing3.PNG',
         '/graffiti/4.jpg',
-        '/clothing/clothing4.JPG',
+        '/clothing/clothing3.PNG',
         '/graffiti/5.jpg',
+        '/clothing/clothing4.JPG',
+        '/graffiti/6.jpg',
         '/clothing/clothing5.JPG',
+        '/graffiti/7.jpg',
     ];
 
     const getMobileSrc = (src) => {

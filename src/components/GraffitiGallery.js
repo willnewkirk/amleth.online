@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Draggable from 'react-draggable';
 import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
 import '../styles/Portfolio.css';
@@ -8,182 +7,140 @@ import '../styles/GraffitiGallery.css';
 
 const GraffitiGallery = () => {
     const navigate = useNavigate();
-    const containerRef = useRef(null);
+    const imageWidth = 300;
+    const currentImageWidth = 350;
     
-    // Prevent scrolling on mount and cleanup
+    const pieces = [
+        { src: '/graffiti/1.JPG', title: 'PAPER MILL (2025)' },
+        { src: '/graffiti/2.jpg', title: 'DRAIN (2023)' },
+        { src: '/graffiti/4.jpg', title: "HAMM'S BREWERY (2022)" },
+        { src: '/graffiti/5.jpg', title: "HAMM'S BREWERY (2021)" },
+        { src: '/graffiti/6.jpg', title: "HAMM'S BREWERY (2022)" },
+        { src: '/graffiti/7.jpg', title: "HAMM'S BREWERY (2021)" }
+    ];
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [touchStart, setTouchStart] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'auto';
         };
     }, []);
-    
-    // Adjust image width based on screen size
-    const getImageWidth = () => {
-        const screenWidth = window.innerWidth;
-        if (screenWidth <= 480) return 120; // phones
-        if (screenWidth <= 768) return 140; // tablets
-        return 250; // desktop
-    };
-    
-    const imageWidth = getImageWidth();
-    const gap = 10; // Reduced gap for mobile
-    
-    // Reorganize positions for 2 columns (3+2 layout on mobile)
-    const getInitialPosition = (index) => {
-        const isMobile = window.innerWidth <= 768;
-        const containerWidth = containerRef.current?.offsetWidth || window.innerWidth;
-        
-        if (isMobile) {
-            const column = index % 2;
-            const row = Math.floor(index / 2);
-            const columnWidth = imageWidth + gap;
-            const startX = (containerWidth - (columnWidth * 2)) / 2;
-            
-            return {
-                x: startX + (column * columnWidth),
-                y: 80 + (row * (imageWidth + gap))
-            };
-        } else {
-            // Desktop layout
-            const isTopRow = index < 4;
-            if (isTopRow) {
-                const topRowWidth = (imageWidth * 4) + (gap * 3);
-                const startX = (containerWidth - topRowWidth) / 2;
-                return {
-                    x: startX + (index * (imageWidth + gap)),
-                    y: 80
-                };
-            } else {
-                const bottomRowWidth = (imageWidth * 3) + (gap * 2);
-                const startX = (containerWidth - bottomRowWidth) / 2;
-                const bottomIndex = index - 4;
-                return {
-                    x: startX + (bottomIndex * (imageWidth + gap)),
-                    y: 80 + imageWidth + gap
-                };
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (isModalOpen) return;
+            if (e.key === 'ArrowLeft') {
+                setCurrentIndex(prev => (prev - 1 + pieces.length) % pieces.length);
+            } else if (e.key === 'ArrowRight') {
+                setCurrentIndex(prev => (prev + 1) % pieces.length);
             }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isModalOpen, pieces.length]);
+
+    const centerPos = 2;
+
+    const getPositionForIndex = (displayIndex) => {
+        const isMobile = window.innerWidth <= 768;
+        const staggerX = isMobile ? 60 : 120;
+        const centerX = window.innerWidth / 2;
+        const baseY = window.innerHeight * 0.22;
+        
+        const arcHeight = isMobile ? -30 : -60;
+        const offsetFromCenter = displayIndex - centerPos;
+        const x = centerX + (offsetFromCenter * staggerX) - (currentImageWidth / 2);
+        const y = baseY + (Math.sin((displayIndex / (pieces.length - 1)) * Math.PI) * arcHeight);
+        
+        return { x, y };
+    };
+
+    const getImageState = (imageIndex) => {
+        const displayIndex = (imageIndex - currentIndex + centerPos + pieces.length) % pieces.length;
+        const isCurrent = displayIndex === centerPos;
+        const position = getPositionForIndex(displayIndex);
+        
+        return {
+            ...position,
+            width: isCurrent ? currentImageWidth : imageWidth,
+            height: isCurrent ? currentImageWidth : imageWidth,
+            zIndex: isCurrent ? 100 : 10 - Math.abs(displayIndex - centerPos),
+            rotation: (displayIndex - centerPos) * 2.5,
+            opacity: Math.abs(displayIndex - centerPos) <= 3 ? 1 : 0
+        };
+    };
+
+    const handleSwipe = (direction) => {
+        setCurrentIndex(prev => {
+            if (direction === 'next') {
+                return (prev + 1) % pieces.length;
+            } else {
+                return (prev - 1 + pieces.length) % pieces.length;
+            }
+        });
+    };
+
+    const handleTouchStart = (e) => {
+        setTouchStart(e.touches[0].clientX);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!touchStart) return;
+        
+        const currentTouch = e.touches[0].clientX;
+        const diff = touchStart - currentTouch;
+        
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                handleSwipe('next');
+            } else {
+                handleSwipe('prev');
+            }
+            setTouchStart(null);
         }
     };
-    
-    // Updated image URLs with correct file extensions
-    const imageUrls = [
-        '/graffiti/1.JPG',
-        '/graffiti/2.jpg',
-        '/graffiti/3.jpg',
-        '/graffiti/4.jpg',
-        '/graffiti/5.jpg',
-        '/graffiti/6.jpg',
-        '/graffiti/7.jpg'
-    ];
-    
-    const [images, setImages] = useState(
-        Array.from({length: 7}, (_, i) => ({
-            id: i,
-            src: imageUrls[i],
-            width: imageWidth,
-            height: imageWidth,
-            ...getInitialPosition(i),
-            zIndex: 1
-        }))
-    );
 
-    // Add resize handler
-    React.useEffect(() => {
-        const handleResize = () => {
-            const newWidth = getImageWidth();
-            setImages(prevImages => 
-                prevImages.map((img, index) => ({
-                    ...img,
-                    width: newWidth,
-                    height: newWidth,
-                    ...getInitialPosition(index)
-                }))
-            );
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const bringToFront = (id) => {
-        setImages(prevImages => prevImages.map(img => ({
-            ...img,
-            zIndex: img.id === id ? 1000 : 1
-        })));
+    const handleTouchEnd = () => {
+        setTouchStart(null);
     };
 
-    const handleMouseEnter = (id) => {
-        bringToFront(id);
+    const handleMouseDown = (e) => {
+        setTouchStart(e.clientX);
     };
 
-    const handleResize = (id, startEvent) => {
-        startEvent.stopPropagation();
+    const handleMouseMove = (e) => {
+        if (!touchStart) return;
+        const diff = touchStart - e.clientX;
         
-        const image = images.find(img => img.id === id);
-        if (!image) return;
-
-        const container = startEvent.target.closest('.draggable-image-container');
-        const startRect = container.getBoundingClientRect();
-        const startWidth = startRect.width;
-        const startHeight = startRect.height;
-        const startX = startEvent.clientX;
-
-        const mouseMoveHandler = (moveEvent) => {
-            const deltaX = moveEvent.clientX - startX;
-            
-            const newWidth = Math.max(100, startWidth + deltaX);
-            
-            const aspectRatio = startWidth / startHeight;
-            const finalWidth = newWidth;
-            const finalHeight = newWidth / aspectRatio;
-
-            setImages(prevImages => prevImages.map(img =>
-                img.id === id
-                    ? { ...img, width: finalWidth, height: finalHeight }
-                    : img
-            ));
-        };
-
-        const mouseUpHandler = () => {
-            window.removeEventListener('mousemove', mouseMoveHandler);
-            window.removeEventListener('mouseup', mouseUpHandler);
-        };
-
-        window.addEventListener('mousemove', mouseMoveHandler);
-        window.addEventListener('mouseup', mouseUpHandler);
-    };
-
-    const [focusedImage, setFocusedImage] = useState(null);
-    const lastTapRef = useRef(0);
-
-    const handleTap = (imageId, e) => {
-        e.preventDefault(); // Prevent default touch behavior
-        
-        const now = Date.now();
-        const DOUBLE_TAP_DELAY = 300;
-
-        if (lastTapRef.current && (now - lastTapRef.current) < DOUBLE_TAP_DELAY) {
-            // Double tap detected
-            setFocusedImage(focusedImage === imageId ? null : imageId);
-            lastTapRef.current = 0;
-        } else {
-            // First tap
-            lastTapRef.current = now;
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                handleSwipe('next');
+            } else {
+                handleSwipe('prev');
+            }
+            setTouchStart(null);
         }
+    };
+
+    const handleMouseUp = () => {
+        setTouchStart(null);
     };
 
     return (
-        <div style={{ 
-            backgroundColor: 'black', 
-            minHeight: '100vh', 
-            color: 'white', 
-            overflow: 'hidden',
-            position: 'relative'
-        }}>
+        <div className="graffiti-page">
             <StarryBackground />
-            <div className="header-container">
+            <div className="header-container" style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 200
+            }}>
                 <div className="header-nav">
                     <button 
                         className="header-button"
@@ -211,71 +168,79 @@ const GraffitiGallery = () => {
                     onClick={() => navigate('/')}
                 />
             </div>
+            
             <div 
-                ref={containerRef}
-                style={{ 
-                    position: 'relative', 
-                    height: 'calc(100vh - 80px)',
-                    width: '100%',
-                    overflow: 'hidden'
-                }}
+                className="graffiti-carousel"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
             >
-                {images.map((image) => (
-                    <Draggable
-                        key={image.id}
-                        defaultPosition={{x: image.x, y: image.y}}
-                        bounds="parent"
-                        onStart={() => bringToFront(image.id)}
-                        disabled={focusedImage !== null}
-                    >
-                        <div 
-                            className={`draggable-image-container ${focusedImage === image.id ? 'focused' : ''}`}
-                            style={{
-                                position: 'absolute',
-                                width: `${image.width}px`,
-                                height: `${image.width}px`, // Keep aspect ratio square
-                                zIndex: focusedImage === image.id ? 2000 : image.zIndex,
-                                transition: focusedImage !== null ? 'all 0.3s ease' : 'none'
-                            }}
-                            onClick={() => bringToFront(image.id)}
-                            onMouseEnter={() => handleMouseEnter(image.id)}
-                            onTouchStart={(e) => handleTap(image.id, e)}
-                        >
-                            <div className="image-wrapper">
+                <div className="carousel-images">
+                    {pieces.map((piece, index) => {
+                        const state = getImageState(index);
+                        return (
+                            <div 
+                                key={index}
+                                className="graffiti-image-wrapper"
+                                style={{
+                                    position: 'absolute',
+                                    left: `${state.x}px`,
+                                    top: `${state.y}px`,
+                                    width: `${state.width}px`,
+                                    height: `${state.height}px`,
+                                    zIndex: state.zIndex,
+                                    transform: `rotate(${state.rotation}deg)`,
+                                    opacity: state.opacity,
+                                    transition: 'all 0.4s ease-out'
+                                }}
+                                onClick={() => setIsModalOpen(true)}
+                            >
                                 <img 
-                                    src={image.src}
-                                    srcSet={image.src.includes('.JPG') ? undefined : `${image.src.replace('/graffiti/', '/graffiti/mobile/')} 800w, ${image.src} 1600w`}
-                                    sizes="(max-width: 768px) 400px, 800px"
-                                    alt={`Graffiti artwork ${image.id + 1}`}
-                                    className="gallery-image"
-                                    loading="lazy"
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover'
-                                    }}
+                                    src={piece.src}
+                                    srcSet={piece.src.endsWith('.jpg') ? `${piece.src.replace('/graffiti/', '/graffiti/mobile/')} 800w, ${piece.src} 1600w` : undefined}
+                                    sizes="(max-width: 768px) 300px, 500px"
+                                    alt={piece.title}
+                                    className="graffiti-stack-image"
+                                    draggable={false}
                                 />
-                                {!focusedImage && (
-                                    <div 
-                                        className="resize-handle"
-                                        onMouseDown={handleResize.bind(null, image.id)}
-                                    >
-                                        <div className="resize-arrow" />
-                                    </div>
-                                )}
                             </div>
-                        </div>
-                    </Draggable>
-                ))}
+                        );
+                    })}
+                </div>
+                
+                <div className="graffiti-info">
+                    <h2 className="graffiti-title">{pieces[currentIndex].title}</h2>
+                </div>
+
+                <div className="graffiti-dots">
+                    {pieces.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`dot ${index === currentIndex ? 'active' : ''}`}
+                            onClick={() => setCurrentIndex(index)}
+                        />
+                    ))}
+                </div>
+
+                <p className="swipe-hint">Swipe to browse</p>
             </div>
-            {focusedImage !== null && (
-                <div 
-                    className="overlay"
-                    onClick={() => setFocusedImage(null)}
-                />
+
+            {isModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                    <img 
+                        src={pieces[currentIndex].src} 
+                        alt={pieces[currentIndex].title}
+                        className="modal-image"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
             )}
         </div>
     );
 };
 
-export default GraffitiGallery; 
+export default GraffitiGallery;

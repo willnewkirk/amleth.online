@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from './StarryBackground';
 import '../styles/Header.css';
@@ -22,6 +22,20 @@ const Clothing = () => {
     const [currentIndex, setCurrentIndex] = useState(2);
     const [touchStart, setTouchStart] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (isModalOpen) return;
+            if (e.key === 'ArrowLeft') {
+                setCurrentIndex(prev => (prev - 1 + pieces.length) % pieces.length);
+            } else if (e.key === 'ArrowRight') {
+                setCurrentIndex(prev => (prev + 1) % pieces.length);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isModalOpen, pieces.length]);
 
     const getPositionForIndex = (displayIndex) => {
         const isMobile = window.innerWidth <= 768;
