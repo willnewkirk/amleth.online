@@ -51,7 +51,7 @@ const LandingPage = () => {
 
   return (
     <div className="landing-container">
-      <StarryBackground />
+      <StarryBackground showPlanets={true} />
       <div className="content-wrapper">
         <div 
           className="logo-online-container"

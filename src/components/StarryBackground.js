@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import '../styles/StarryBackground.css';
 
-const StarryBackground = () => {
+const StarryBackground = ({ showPlanets = false }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -25,6 +25,8 @@ const StarryBackground = () => {
         const planets = [];
         
         const driftSpeed = 0.6;
+        let starRotation = 0;
+        const starRotationSpeed = 0.00005;
         const pixelSize = 3;
         
         // Create planets with spacing to prevent overlap
@@ -69,7 +71,9 @@ const StarryBackground = () => {
             });
         };
         
-        createPlanets();
+        if (showPlanets) {
+            createPlanets();
+        }
         
         // Check if planets would overlap and adjust Y position
         const adjustPlanetPositions = () => {
@@ -724,6 +728,8 @@ const StarryBackground = () => {
             const fullFade = Math.random() < 0.4;
             // 70% of stars are behind planets, 30% are in front
             const layer = Math.random() < 0.7 ? 0 : 1;
+            // 50% of stars start straight, 50% start with random tilt
+            const initialRotation = Math.random() < 0.5 ? 0 : Math.random() * Math.PI * 2;
             stars.push({
                 x: Math.floor(Math.random() * canvas.width / pixelSize) * pixelSize,
                 y: Math.floor(Math.random() * canvas.height / pixelSize) * pixelSize,
@@ -737,7 +743,8 @@ const StarryBackground = () => {
                 randomTwinkleTime: 0,
                 randomTwinkleDuration: 0,
                 nextRandomTwinkle: Math.random() * 300 + 100,
-                layer: layer
+                layer: layer,
+                initialRotation: initialRotation
             });
         }
 
@@ -753,6 +760,8 @@ const StarryBackground = () => {
                 const isBright = Math.random() < 0.4;
                 const fullFade = Math.random() < 0.4;
                 const layer = Math.random() < 0.7 ? 0 : 1;
+                // 50% of stars start straight, 50% start with random tilt
+                const clusterInitialRotation = Math.random() < 0.5 ? 0 : Math.random() * Math.PI * 2;
                 clusterStars.push({
                     x: Math.floor((centerX + (Math.random() - 0.5) * 100) / pixelSize) * pixelSize,
                     y: Math.floor((centerY + (Math.random() - 0.5) * 100) / pixelSize) * pixelSize,
@@ -766,38 +775,45 @@ const StarryBackground = () => {
                     randomTwinkleTime: 0,
                     randomTwinkleDuration: 0,
                     nextRandomTwinkle: Math.random() * 300 + 100,
-                    layer: layer
+                    layer: layer,
+                    initialRotation: clusterInitialRotation
                 });
             }
             clusters.push(clusterStars);
         }
 
-        const drawStar = (x, y, size, brightness) => {
+        const drawStar = (x, y, size, brightness, initialRotation = 0) => {
             if (brightness <= 0) return;
             
             const px = Math.floor(x / pixelSize) * pixelSize;
             const py = Math.floor(y / pixelSize) * pixelSize;
             const alpha = Math.min(brightness, 1);
             
+            ctx.save();
+            ctx.translate(px, py);
+            ctx.rotate(starRotation + initialRotation);
+            
             ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
             
             if (size >= 2) {
-                ctx.fillRect(px, py, pixelSize, pixelSize);
-                ctx.fillRect(px - pixelSize, py, pixelSize, pixelSize);
-                ctx.fillRect(px + pixelSize, py, pixelSize, pixelSize);
-                ctx.fillRect(px, py - pixelSize, pixelSize, pixelSize);
-                ctx.fillRect(px, py + pixelSize, pixelSize, pixelSize);
+                ctx.fillRect(0, 0, pixelSize, pixelSize);
+                ctx.fillRect(-pixelSize, 0, pixelSize, pixelSize);
+                ctx.fillRect(pixelSize, 0, pixelSize, pixelSize);
+                ctx.fillRect(0, -pixelSize, pixelSize, pixelSize);
+                ctx.fillRect(0, pixelSize, pixelSize, pixelSize);
                 
                 if (size >= 3 && brightness > 0.7) {
                     ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.6})`;
-                    ctx.fillRect(px - pixelSize * 2, py, pixelSize, pixelSize);
-                    ctx.fillRect(px + pixelSize * 2, py, pixelSize, pixelSize);
-                    ctx.fillRect(px, py - pixelSize * 2, pixelSize, pixelSize);
-                    ctx.fillRect(px, py + pixelSize * 2, pixelSize, pixelSize);
+                    ctx.fillRect(-pixelSize * 2, 0, pixelSize, pixelSize);
+                    ctx.fillRect(pixelSize * 2, 0, pixelSize, pixelSize);
+                    ctx.fillRect(0, -pixelSize * 2, pixelSize, pixelSize);
+                    ctx.fillRect(0, pixelSize * 2, pixelSize, pixelSize);
                 }
             } else {
-                ctx.fillRect(px, py, pixelSize, pixelSize);
+                ctx.fillRect(0, 0, pixelSize, pixelSize);
             }
+            
+            ctx.restore();
         };
 
         const createShootingStar = () => {
@@ -869,20 +885,22 @@ const StarryBackground = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             frameCount++;
             
-            // Update planet positions and rotations
-            planets.forEach(planet => {
-                planet.x += driftSpeed * planet.speedMultiplier;
-                // Slowly rotate planets to simulate orbiting around camera
-                planet.rotation += planet.rotationSpeed;
+            // Update planet positions and rotations (only if planets enabled)
+            if (showPlanets) {
+                planets.forEach(planet => {
+                    planet.x += driftSpeed * planet.speedMultiplier;
+                    // Slowly rotate planets to simulate orbiting around camera
+                    planet.rotation += planet.rotationSpeed;
+                    
+                    if (planet.x > canvas.width + 300) {
+                        planet.x = -300 - Math.random() * 200;
+                        planet.y = Math.random() * canvas.height * 0.5 + canvas.height * 0.15;
+                    }
+                });
                 
-                if (planet.x > canvas.width + 300) {
-                    planet.x = -300 - Math.random() * 200;
-                    planet.y = Math.random() * canvas.height * 0.5 + canvas.height * 0.15;
-                }
-            });
-            
-            // Check for overlap and adjust
-            adjustPlanetPositions();
+                // Check for overlap and adjust
+                adjustPlanetPositions();
+            }
             
             // Update all star positions and brightness
             stars.forEach(star => {
@@ -908,32 +926,34 @@ const StarryBackground = () => {
             // Draw background stars (layer 0) - behind planets
             stars.forEach(star => {
                 if (star.layer === 0) {
-                    drawStar(star.x, star.y, star.size, star.brightness);
+                    drawStar(star.x, star.y, star.size, star.brightness, star.initialRotation);
                 }
             });
             clusters.forEach(cluster => {
                 cluster.forEach(star => {
                     if (star.layer === 0) {
-                        drawStar(star.x, star.y, star.size, star.brightness);
+                        drawStar(star.x, star.y, star.size, star.brightness, star.initialRotation);
                     }
                 });
             });
             
-            // Draw planets
-            planets.forEach(planet => {
-                drawPlanet(planet);
-            });
+            // Draw planets (only if enabled)
+            if (showPlanets) {
+                planets.forEach(planet => {
+                    drawPlanet(planet);
+                });
+            }
             
             // Draw foreground stars (layer 1) - in front of planets
             stars.forEach(star => {
                 if (star.layer === 1) {
-                    drawStar(star.x, star.y, star.size, star.brightness);
+                    drawStar(star.x, star.y, star.size, star.brightness, star.initialRotation);
                 }
             });
             clusters.forEach(cluster => {
                 cluster.forEach(star => {
                     if (star.layer === 1) {
-                        drawStar(star.x, star.y, star.size, star.brightness);
+                        drawStar(star.x, star.y, star.size, star.brightness, star.initialRotation);
                     }
                 });
             });
@@ -954,6 +974,7 @@ const StarryBackground = () => {
             });
             
             time += 0.05;
+            starRotation += starRotationSpeed;
             requestAnimationFrame(animate);
         };
         
@@ -962,7 +983,7 @@ const StarryBackground = () => {
         return () => {
             window.removeEventListener('resize', resizeCanvas);
         };
-    }, []);
+    }, [showPlanets]);
 
     return <canvas ref={canvasRef} className="starry-background" />;
 };
