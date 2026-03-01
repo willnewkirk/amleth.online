@@ -23,6 +23,17 @@ const Portfolio = () => {
         '/clothing/clothing5.JPG',
     ];
 
+    const getMobileSrc = (src) => {
+        if (src.endsWith('.jpg')) {
+            if (src.includes('/graffiti/')) {
+                return src.replace('/graffiti/', '/graffiti/mobile/');
+            } else if (src.includes('/clothing/')) {
+                return src.replace('/clothing/', '/clothing/mobile/');
+            }
+        }
+        return null;
+    };
+
     useEffect(() => {
         const interval = setInterval(() => {
             setIsTransitioning(true);
@@ -84,6 +95,8 @@ const Portfolio = () => {
                 <div className="preview-image-container">
                     <img 
                         src={previewImages[currentImageIndex]}
+                        srcSet={getMobileSrc(previewImages[currentImageIndex]) ? `${getMobileSrc(previewImages[currentImageIndex])} 800w, ${previewImages[currentImageIndex]} 1600w` : undefined}
+                        sizes="(max-width: 768px) 300px, 400px"
                         alt="Preview"
                         className={`preview-image ${isTransitioning ? 'fade-out' : 'fade-in'}`}
                     />

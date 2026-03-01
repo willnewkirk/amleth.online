@@ -244,8 +244,11 @@ const GraffitiGallery = () => {
                             <div className="image-wrapper">
                                 <img 
                                     src={image.src}
+                                    srcSet={image.src.includes('.JPG') ? undefined : `${image.src.replace('/graffiti/', '/graffiti/mobile/')} 800w, ${image.src} 1600w`}
+                                    sizes="(max-width: 768px) 400px, 800px"
                                     alt={`Graffiti artwork ${image.id + 1}`}
                                     className="gallery-image"
+                                    loading="lazy"
                                     style={{
                                         width: '100%',
                                         height: '100%',

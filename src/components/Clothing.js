@@ -9,7 +9,6 @@ import '../styles/LandingPage.css';
 const Clothing = () => {
     const navigate = useNavigate();
     const imageWidth = 300;
-    const enlargedWidth = window.innerWidth <= 768 ? window.innerWidth * 0.9 : 500;
     const currentImageWidth = 350;
     
     const pieces = [
@@ -20,71 +19,47 @@ const Clothing = () => {
         { src: '/clothing/clothing5.JPG', title: 'Unstoppable Chaos (Black)', year: '2022' }
     ];
 
-    const [enlargedId, setEnlargedId] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(2);
     const [touchStart, setTouchStart] = useState(null);
-    const [selectedImage] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const getInitialPosition = (index) => {
-        const staggerX = 250;
-        const centerX = (window.innerWidth - (imageWidth + (staggerX * 4))) / 2 + 450;
-        const baseY = (window.innerHeight / 4);
+    const getPositionForIndex = (displayIndex) => {
+        const isMobile = window.innerWidth <= 768;
+        const staggerX = isMobile ? 60 : 120;
+        const centerX = window.innerWidth / 2;
+        const baseY = window.innerHeight * 0.30;
         
-        const arcHeight = -120;
-        const adjustedIndex = index - 2;
-        const x = centerX + (adjustedIndex * staggerX);
-        const y = baseY + (Math.sin((index / (pieces.length - 1)) * Math.PI) * arcHeight);
+        const arcHeight = isMobile ? -40 : -80;
+        const offsetFromCenter = displayIndex - 2;
+        const x = centerX + (offsetFromCenter * staggerX) - (currentImageWidth / 2);
+        const y = baseY + (Math.sin((displayIndex / 4) * Math.PI) * arcHeight);
         
         return { x, y };
     };
 
-    const [images, setImages] = useState(
-        pieces.map((piece, i) => ({
-            id: i,
-            ...piece,
-            width: i === 2 ? currentImageWidth : imageWidth,
-            height: i === 2 ? currentImageWidth : imageWidth,
-            ...getInitialPosition(i),
-            zIndex: i === 2 ? 8 : 7 - Math.abs(i - 2)
-        }))
-    );
-
-    const bringToFront = (id) => {
-        if (!enlargedId) {
-            setImages(prevImages => prevImages.map(img => ({
-                ...img,
-                zIndex: img.id === id ? 1000 : img.zIndex
-            })));
-        }
+    const getImageState = (imageIndex) => {
+        const displayIndex = (imageIndex - currentIndex + 2 + pieces.length) % pieces.length;
+        const isCurrent = displayIndex === 2;
+        const position = getPositionForIndex(displayIndex);
+        
+        return {
+            ...position,
+            width: isCurrent ? currentImageWidth : imageWidth,
+            height: isCurrent ? currentImageWidth : imageWidth,
+            zIndex: isCurrent ? 100 : 10 - Math.abs(displayIndex - 2),
+            rotation: (displayIndex - 2) * 3,
+            opacity: Math.abs(displayIndex - 2) <= 2 ? 1 : 0
+        };
     };
 
-    const handleImageClick = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleArrowClick = (direction) => {
+    const handleSwipe = (direction) => {
         setCurrentIndex(prev => {
-            const newIndex = direction === 'next' 
-                ? (prev + 1) % images.length 
-                : (prev - 1 + images.length) % images.length;
-            
-            setImages(prevImages => prevImages.map((img, i) => {
-                const newPosition = (i - newIndex + 2 + images.length) % images.length;
-                const isCenterImage = newPosition === 2;
-                
-                return {
-                    ...img,
-                    ...getInitialPosition(newPosition),
-                    width: isCenterImage ? currentImageWidth : imageWidth,
-                    height: isCenterImage ? currentImageWidth : imageWidth,
-                    zIndex: isCenterImage ? 8 : 7 - Math.abs(newPosition - 2)
-                };
-            }));
-            
-            return newIndex;
+            if (direction === 'next') {
+                return (prev + 1) % pieces.length;
+            } else {
+                return (prev - 1 + pieces.length) % pieces.length;
+            }
         });
-        setEnlargedId(null);
     };
 
     const handleTouchStart = (e) => {
@@ -99,9 +74,9 @@ const Clothing = () => {
         
         if (Math.abs(diff) > 50) {
             if (diff > 0) {
-                handleArrowClick('next');
+                handleSwipe('next');
             } else {
-                handleArrowClick('prev');
+                handleSwipe('prev');
             }
             setTouchStart(null);
         }
@@ -111,14 +86,37 @@ const Clothing = () => {
         setTouchStart(null);
     };
 
+    const handleMouseDown = (e) => {
+        setTouchStart(e.clientX);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!touchStart) return;
+        const diff = touchStart - e.clientX;
+        
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                handleSwipe('next');
+            } else {
+                handleSwipe('prev');
+            }
+            setTouchStart(null);
+        }
+    };
+
+    const handleMouseUp = () => {
+        setTouchStart(null);
+    };
+
     return (
-        <div>
+        <div className="clothing-page">
+            <StarryBackground />
             <div className="header-container" style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
-                zIndex: 2
+                zIndex: 200
             }}>
                 <div className="header-nav">
                     <button 
@@ -149,85 +147,78 @@ const Clothing = () => {
             </div>
             
             <div 
-                className="clothing-container"
+                className="clothing-carousel"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
-                style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '100%',
-                    height: '100vh',
-                    overflow: 'hidden',
-                    paddingTop: '60px' // Add space for nav and logo
-                }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
             >
-                <StarryBackground />
-                <div className="carousel-container">
-                    <div className="carousel-section">
-                        <button className="arrow-button left desktop-only" onClick={() => handleArrowClick('prev')}>
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                        </button>
-                        <button className="arrow-button right desktop-only" onClick={() => handleArrowClick('next')}>
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                                <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                        </button>
-                        {images.map((image) => (
+                <div className="carousel-images">
+                    {pieces.map((piece, index) => {
+                        const state = getImageState(index);
+                        return (
                             <div 
-                                key={image.id}
-                                className={`draggable-image-container ${enlargedId === image.id ? 'enlarged' : ''}`}
+                                key={index}
+                                className="clothing-image-wrapper"
                                 style={{
-                                    position: enlargedId === image.id ? 'fixed' : 'absolute',
-                                    width: `${enlargedId === image.id ? enlargedWidth : image.width}px`,
-                                    height: `${enlargedId === image.id ? enlargedWidth : image.height}px`,
-                                    ...(enlargedId !== image.id && {
-                                        left: `${image.x}px`,
-                                        top: `${image.y}px`,
-                                        transform: `rotate(${image.id * 2 - 7}deg)`
-                                    })
+                                    position: 'absolute',
+                                    left: `${state.x}px`,
+                                    top: `${state.y}px`,
+                                    width: `${state.width}px`,
+                                    height: `${state.height}px`,
+                                    zIndex: state.zIndex,
+                                    transform: `rotate(${state.rotation}deg)`,
+                                    opacity: state.opacity,
+                                    transition: 'all 0.4s ease-out'
                                 }}
-                                onMouseEnter={() => bringToFront(image.id)}
-                                onClick={() => handleImageClick(image)}
+                                onClick={() => setIsModalOpen(true)}
                             >
-                                <div className="image-wrapper">
-                                    <img 
-                                        src={image.src}
-                                        alt={`Clothing piece ${image.id + 1}`}
-                                        className={`gallery-image ${selectedImage === image.src ? 'enlarged-image' : ''}`}
-                                        loading="lazy"
-                                    />
-                                </div>
+                                <img 
+                                    src={piece.src}
+                                    srcSet={piece.src.endsWith('.jpg') ? `${piece.src.replace('/clothing/', '/clothing/mobile/')} 800w, ${piece.src} 1600w` : undefined}
+                                    sizes="(max-width: 768px) 300px, 500px"
+                                    alt={piece.title}
+                                    className="clothing-stack-image"
+                                    draggable={false}
+                                />
                             </div>
-                        ))}
-                    </div>
-                    <div className="content-wrapper piece-info">
-                        <div className="piece-title">
-                            <span className="nav-button">{images[currentIndex].title}</span>
-                        </div>
-                        <div className="piece-year">
-                            <span className="nav-button">{images[currentIndex].year}</span>
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
                 
-                {isModalOpen && (
-                    <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-                        <img 
-                            src={images[currentIndex].src} 
-                            alt="Clothing" 
-                            className="modal-image"
-                            onClick={(e) => e.stopPropagation()}
+                <div className="clothing-info">
+                    <h2 className="clothing-title">{pieces[currentIndex].title}</h2>
+                    <p className="clothing-year">{pieces[currentIndex].year}</p>
+                </div>
+
+                <div className="clothing-dots">
+                    {pieces.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`dot ${index === currentIndex ? 'active' : ''}`}
+                            onClick={() => setCurrentIndex(index)}
                         />
-                    </div>
-                )}
+                    ))}
+                </div>
+
+                <p className="swipe-hint">Swipe to browse</p>
             </div>
+
+            {isModalOpen && (
+                <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                    <img 
+                        src={pieces[currentIndex].src} 
+                        alt={pieces[currentIndex].title}
+                        className="modal-image"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 };
 
-export default Clothing; 
+export default Clothing;
