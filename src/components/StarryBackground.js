@@ -8,9 +8,12 @@ const StarryBackground = () => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         
+        ctx.imageSmoothingEnabled = false;
+        
         const resizeCanvas = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            ctx.imageSmoothingEnabled = false;
         };
         
         resizeCanvas();
@@ -20,35 +23,34 @@ const StarryBackground = () => {
         const clusters = [];
         const shootingStars = [];
         
-        const driftSpeed = 0.1;
+        const driftSpeed = 1.4;
+        const pixelSize = 3;
         
         // Regular stars with random twinkle capability
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             const isBright = Math.random() < 0.4;
             const fullFade = Math.random() < 0.4;
             stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: isBright ? Math.random() * 2.5 + 1.5 : Math.random() * 1.5 + 1,
+                x: Math.floor(Math.random() * canvas.width / pixelSize) * pixelSize,
+                y: Math.floor(Math.random() * canvas.height / pixelSize) * pixelSize,
+                size: isBright ? Math.floor(Math.random() * 2) + 2 : Math.floor(Math.random() * 1) + 1,
                 brightness: Math.random(),
                 maxBrightness: isBright ? 1 : 0.7,
-                glowSize: isBright ? Math.random() * 6 + 4 : Math.random() * 5 + 3,
-                twinkleSpeed: Math.random() * 0.0015 + 0.0008, // Much slower twinkle
+                twinkleSpeed: Math.random() * 0.002 + 0.001,
                 offset: Math.random() * Math.PI * 2,
                 fullFade: fullFade,
-                // Random twinkle properties
                 isRandomTwinkling: false,
                 randomTwinkleTime: 0,
                 randomTwinkleDuration: 0,
-                nextRandomTwinkle: Math.random() * 600 + 200 // Longer interval for random twinkle
+                nextRandomTwinkle: Math.random() * 300 + 100
             });
         }
 
-        // Clusters with random twinkle capability
+        // Clusters
         for (let i = 0; i < 4; i++) {
             const section = i % 4;
-            const centerX = (Math.random() * 0.4 + (section % 2) * 0.5) * canvas.width;
-            const centerY = (Math.random() * 0.4 + Math.floor(section / 2) * 0.5) * canvas.height;
+            const centerX = Math.floor((Math.random() * 0.4 + (section % 2) * 0.5) * canvas.width / pixelSize) * pixelSize;
+            const centerY = Math.floor((Math.random() * 0.4 + Math.floor(section / 2) * 0.5) * canvas.height / pixelSize) * pixelSize;
             const clusterStars = [];
             const clusterOffset = Math.random() * Math.PI * 2;
             
@@ -56,135 +58,93 @@ const StarryBackground = () => {
                 const isBright = Math.random() < 0.4;
                 const fullFade = Math.random() < 0.4;
                 clusterStars.push({
-                    x: centerX + (Math.random() - 0.5) * 100,
-                    y: centerY + (Math.random() - 0.5) * 100,
-                    size: isBright ? Math.random() * 2.5 + 1.5 : Math.random() * 1.5 + 1,
+                    x: Math.floor((centerX + (Math.random() - 0.5) * 100) / pixelSize) * pixelSize,
+                    y: Math.floor((centerY + (Math.random() - 0.5) * 100) / pixelSize) * pixelSize,
+                    size: isBright ? Math.floor(Math.random() * 2) + 2 : Math.floor(Math.random() * 1) + 1,
                     brightness: Math.random(),
                     maxBrightness: isBright ? 1 : 0.7,
-                    glowSize: isBright ? Math.random() * 6 + 4 : Math.random() * 5 + 3,
-                    twinkleSpeed: Math.random() * 0.0015 + 0.0008, // Much slower twinkle
+                    twinkleSpeed: Math.random() * 0.002 + 0.001,
                     offset: clusterOffset + Math.random() * 0.5,
                     fullFade: fullFade,
-                    // Random twinkle properties
                     isRandomTwinkling: false,
                     randomTwinkleTime: 0,
                     randomTwinkleDuration: 0,
-                    nextRandomTwinkle: Math.random() * 600 + 200
+                    nextRandomTwinkle: Math.random() * 300 + 100
                 });
             }
             clusters.push(clusterStars);
         }
 
-        const drawStar = (x, y, size, brightness, glowSize) => {
+        // Draw pixelated diamond-shaped star
+        const drawStar = (x, y, size, brightness) => {
             if (brightness <= 0) return;
             
-            ctx.save();
-            ctx.translate(x, y);
+            const px = Math.floor(x / pixelSize) * pixelSize;
+            const py = Math.floor(y / pixelSize) * pixelSize;
+            const alpha = Math.min(brightness, 1);
             
-            // Draw soft glow behind the star
-            const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glowSize * 0.6);
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${brightness * 0.5})`);
-            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${brightness * 0.15})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
             
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(0, 0, glowSize * 0.6, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw 4-pointed star shape with very sharp points
-            const outerRadius = size * 1.5; // Longer points
-            const innerRadius = size * 0.12; // Much smaller inner radius for sharper points
-            const points = 4;
-            
-            ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(brightness * 1.3, 1)})`;
-            ctx.beginPath();
-            
-            for (let i = 0; i < points * 2; i++) {
-                const radius = i % 2 === 0 ? outerRadius : innerRadius;
-                const angle = (i * Math.PI) / points - Math.PI / 2;
-                const px = Math.cos(angle) * radius;
-                const py = Math.sin(angle) * radius;
+            if (size >= 2) {
+                // Diamond pattern:
+                //     X
+                //   X X X
+                //     X
+                ctx.fillRect(px, py, pixelSize, pixelSize); // Center
+                ctx.fillRect(px - pixelSize, py, pixelSize, pixelSize); // Left
+                ctx.fillRect(px + pixelSize, py, pixelSize, pixelSize); // Right
+                ctx.fillRect(px, py - pixelSize, pixelSize, pixelSize); // Top
+                ctx.fillRect(px, py + pixelSize, pixelSize, pixelSize); // Bottom
                 
-                if (i === 0) {
-                    ctx.moveTo(px, py);
-                } else {
-                    ctx.lineTo(px, py);
+                if (size >= 3 && brightness > 0.7) {
+                    // Larger diamond - extend the points
+                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.6})`;
+                    ctx.fillRect(px - pixelSize * 2, py, pixelSize, pixelSize); // Far left
+                    ctx.fillRect(px + pixelSize * 2, py, pixelSize, pixelSize); // Far right
+                    ctx.fillRect(px, py - pixelSize * 2, pixelSize, pixelSize); // Far top
+                    ctx.fillRect(px, py + pixelSize * 2, pixelSize, pixelSize); // Far bottom
                 }
+            } else {
+                // Small star - single pixel
+                ctx.fillRect(px, py, pixelSize, pixelSize);
             }
-            
-            ctx.closePath();
-            ctx.fill();
-            
-            // Draw tiny bright center core
-            ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(brightness * 1.5, 1)})`;
-            ctx.beginPath();
-            ctx.arc(0, 0, size * 0.15, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.restore();
         };
 
         const createShootingStar = () => {
-            // Angle going from left to right, slightly downward (between -30 and +30 degrees from horizontal)
-            const angle = Math.random() * Math.PI / 3 - Math.PI / 6;
-            const speed = Math.random() * 12 + 8;
-            // Start from the left side of the screen, at a random vertical position
-            const startY = Math.random() * canvas.height * 0.7; // Upper 70% of screen
+            const angle = Math.random() * Math.PI / 4 - Math.PI / 8; // Slight downward angle
+            const speed = Math.random() * 10 + 8;
+            const startY = Math.floor(Math.random() * canvas.height * 0.6 / pixelSize) * pixelSize;
             
             return {
-                x: -50, // Start off the left edge
+                x: -20,
                 y: startY,
                 speed: speed,
-                length: Math.random() * 80 + 60, // Longer tail
+                length: Math.floor(Math.random() * 12 + 8),
                 angle: angle,
-                opacity: Math.random() * 0.5 + 0.5, // Much brighter (0.5 to 1.0)
-                width: Math.random() * 2 + 1.5, // Thicker line
-                // Glow properties
-                glowOpacity: Math.random() * 0.3 + 0.2
+                opacity: Math.random() * 0.4 + 0.6
             };
         };
 
-        // Draw shooting star with glow effect
+        // Draw pixelated shooting star - simple diagonal line
         const drawShootingStar = (star) => {
-            // Draw outer glow
-            ctx.beginPath();
-            ctx.moveTo(star.x, star.y);
-            ctx.lineTo(
-                star.x - Math.cos(star.angle) * star.length * 0.7,
-                star.y - Math.sin(star.angle) * star.length * 0.7
-            );
-            ctx.strokeStyle = `rgba(255, 255, 255, ${star.glowOpacity})`;
-            ctx.lineWidth = star.width * 3;
-            ctx.lineCap = 'round';
-            ctx.stroke();
-
-            // Draw main streak
-            const gradient = ctx.createLinearGradient(
-                star.x, star.y,
-                star.x - Math.cos(star.angle) * star.length,
-                star.y - Math.sin(star.angle) * star.length
-            );
-            gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
-            gradient.addColorStop(0.3, `rgba(255, 255, 255, ${star.opacity * 0.8})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-            ctx.beginPath();
-            ctx.moveTo(star.x, star.y);
-            ctx.lineTo(
-                star.x - Math.cos(star.angle) * star.length,
-                star.y - Math.sin(star.angle) * star.length
-            );
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = star.width;
-            ctx.lineCap = 'round';
-            ctx.stroke();
-
-            // Draw bright head
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.width * 1.5, 0, Math.PI * 2);
+            const px = Math.floor(star.x / pixelSize) * pixelSize;
+            const py = Math.floor(star.y / pixelSize) * pixelSize;
+            
+            // Draw a simple pixel trail behind the star
+            for (let i = 0; i < star.length; i++) {
+                const trailX = px - i * pixelSize * 2;
+                const trailY = py - Math.floor(i * Math.sin(star.angle) * pixelSize);
+                const fadeRatio = 1 - (i / star.length);
+                const alpha = star.opacity * fadeRatio;
+                
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                ctx.fillRect(trailX, trailY, pixelSize, pixelSize);
+            }
+            
+            // Bright head pixel
             ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-            ctx.fill();
+            ctx.fillRect(px, py, pixelSize, pixelSize);
+            ctx.fillRect(px + pixelSize, py, pixelSize, pixelSize);
         };
 
         // Update star brightness with random twinkle effect
@@ -193,36 +153,32 @@ const StarryBackground = () => {
             if (!star.isRandomTwinkling && frameCount >= star.nextRandomTwinkle) {
                 star.isRandomTwinkling = true;
                 star.randomTwinkleTime = 0;
-                star.randomTwinkleDuration = Math.random() * 60 + 40; // Slower twinkle duration
+                star.randomTwinkleDuration = Math.random() * 40 + 20;
             }
 
-            // Handle random twinkling
+            // Handle random twinkling - bright flash
             if (star.isRandomTwinkling) {
                 star.randomTwinkleTime++;
                 const twinkleProgress = star.randomTwinkleTime / star.randomTwinkleDuration;
                 
-                // Quick bright flash then fade
-                if (twinkleProgress < 0.3) {
-                    // Rapid brightening
-                    star.brightness = star.maxBrightness * (1 + twinkleProgress * 2);
+                if (twinkleProgress < 0.5) {
+                    // Brighten up
+                    star.brightness = star.maxBrightness * (1 + twinkleProgress * 1.5);
                 } else if (twinkleProgress < 1) {
-                    // Gradual dimming back to normal
-                    const fadeProgress = (twinkleProgress - 0.3) / 0.7;
-                    const normalBrightness = star.fullFade 
-                        ? Math.max(0, Math.sin(time * star.twinkleSpeed + star.offset)) * star.maxBrightness
-                        : (0.3 + Math.sin(time * star.twinkleSpeed + star.offset) * 0.7) * star.maxBrightness;
-                    star.brightness = star.maxBrightness * (1 + (1 - fadeProgress) * 0.6) * (1 - fadeProgress) + normalBrightness * fadeProgress;
+                    // Fade back
+                    const fadeProgress = (twinkleProgress - 0.5) / 0.5;
+                    star.brightness = star.maxBrightness * (1.75 - fadeProgress * 0.75);
                 } else {
-                    // End twinkle, set next random twinkle time
+                    // End twinkle
                     star.isRandomTwinkling = false;
-                    star.nextRandomTwinkle = frameCount + Math.random() * 800 + 300;
+                    star.nextRandomTwinkle = frameCount + Math.random() * 400 + 150;
                 }
             } else {
-                // Normal sine wave brightness
+                // Normal gentle brightness variation
                 const sineWave = Math.sin(time * star.twinkleSpeed + star.offset);
                 star.brightness = star.fullFade 
-                    ? Math.max(0, sineWave) * star.maxBrightness
-                    : (0.3 + sineWave * 0.7) * star.maxBrightness;
+                    ? Math.max(0.2, (0.5 + sineWave * 0.5)) * star.maxBrightness
+                    : (0.5 + sineWave * 0.5) * star.maxBrightness;
             }
         };
 
@@ -237,11 +193,11 @@ const StarryBackground = () => {
                 star.x += driftSpeed;
                 if (star.x > canvas.width) {
                     star.x = 0;
-                    star.y = Math.random() * canvas.height;
+                    star.y = Math.floor(Math.random() * canvas.height / pixelSize) * pixelSize;
                 }
                 
                 updateStarBrightness(star, time, frameCount);
-                drawStar(star.x, star.y, star.size, star.brightness, star.glowSize);
+                drawStar(star.x, star.y, star.size, star.brightness);
             });
             
             clusters.forEach(cluster => {
@@ -249,31 +205,31 @@ const StarryBackground = () => {
                     star.x += driftSpeed;
                     if (star.x > canvas.width) {
                         star.x = 0;
-                        star.y = Math.random() * canvas.height;
+                        star.y = Math.floor(Math.random() * canvas.height / pixelSize) * pixelSize;
                     }
                     
                     updateStarBrightness(star, time, frameCount);
-                    drawStar(star.x, star.y, star.size, star.brightness, star.glowSize);
+                    drawStar(star.x, star.y, star.size, star.brightness);
                 });
             });
             
-            // Shooting stars - rare occurrence
-            if (Math.random() < 0.002) {
+            // Shooting stars
+            if (Math.random() < 0.003) {
                 shootingStars.push(createShootingStar());
             }
             
             shootingStars.forEach((star, index) => {
-                star.x += Math.cos(star.angle) * star.speed;
-                star.y += Math.sin(star.angle) * star.speed;
+                star.x += star.speed;
+                star.y += Math.sin(star.angle) * star.speed * 0.3;
                 
                 drawShootingStar(star);
                 
-                if (star.y > canvas.height + 100 || star.x < -100 || star.x > canvas.width + 100) {
+                if (star.x > canvas.width + 100) {
                     shootingStars.splice(index, 1);
                 }
             });
             
-            time += 0.03;
+            time += 0.05;
             requestAnimationFrame(animate);
         };
         
@@ -287,4 +243,4 @@ const StarryBackground = () => {
     return <canvas ref={canvasRef} className="starry-background" />;
 };
 
-export default StarryBackground; 
+export default StarryBackground;
