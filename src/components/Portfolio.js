@@ -40,9 +40,13 @@ const Portfolio = () => {
             setIsTransitioning(true);
             setTimeout(() => {
                 setCurrentImageIndex((prev) => (prev + 1) % previewImages.length);
-                setIsTransitioning(false);
-            }, 200);
-        }, 1000);
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setIsTransitioning(false);
+                    });
+                });
+            }, 600);
+        }, 2200);
 
         return () => clearInterval(interval);
     }, [previewImages.length]);
